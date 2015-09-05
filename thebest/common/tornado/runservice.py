@@ -35,11 +35,11 @@ class RunService(App):  # pylint: disable=too-few-public-methods
                 some.execute()
 
     Then add to your setup.py a new entry_point to this class in the
-    'prjname.service' namespace
+    'thebest.service' namespace
         setuptools.setup(
             .
             entry_points={
-                'prjname.services': [
+                'thebest.services': [
                     'newCommand = path.to.new.command:NewCommand',
                 ],
             },
@@ -49,7 +49,7 @@ class RunService(App):  # pylint: disable=too-few-public-methods
         super(RunService, self).__init__(
             description='Miramar services',
             version='1.0',
-            command_manager=CommandManager('prjname.services'),)
+            command_manager=CommandManager('thebest.services'),)
 
 
 def shutdown():
@@ -69,7 +69,7 @@ def main():
                         action='store_const', const=True, default=False)
     parser.add_argument('--output-file', type=str,
                         help="The file to store the profiling output",
-                        default="prjname-{0}.prof")
+                        default="thebest-{0}.prof")
     parsed_args, remaining_args = parser.parse_known_args()
 
     profiler = profile.Profile()
@@ -82,10 +82,10 @@ def main():
                 result = profiler.runcall(execute, self, transforms,
                                           *args, **kwargs)
                 profile_stats = pstats.Stats(profiler)
-                if 'prjname' in profile_filter:
+                if 'thebest' in profile_filter:
                     profile_stats.stats = (
                         {k: v for k, v in profile_stats.stats.iteritems()
-                         if '_pkg/prjname/' in k[0]})
+                         if '_pkg/thebest/' in k[0]})
 
                 service = self.__module__.split('.')
                 service = service[1] if len(service) >= 2 else service[0]

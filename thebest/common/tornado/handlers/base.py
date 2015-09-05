@@ -11,10 +11,10 @@ from logging import getLogger
 from tornado import httpclient
 from tornado import web
 
-from prjname.common import constants
-from prjname.common import exceptions
-from prjname.common import settings
-from prjname.common.utils.support import Support
+from thebest.common import constants
+from thebest.common import exceptions
+from thebest.common import settings
+from thebest.common.utils.support import Support
 
 METHODS = (OPTIONS, GET, POST, PUT, DELETE, HEAD, PATCH) = (
     'OPTIONS', 'GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'PATCH'
@@ -43,7 +43,7 @@ class BaseHandler(web.RequestHandler):  # pylint: disable=too-many-public-method
         config.dictConfig(settings.LOGGING)
         logger = getLogger(settings.LOGGER_NAME)
 
-        environment_name = 'MFS_ENV'
+        environment_name = 'TB_ENV'
 
         environment = os.environ.get(environment_name)
         if not environment:

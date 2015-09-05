@@ -3,8 +3,8 @@ Application definitions and URL mappings
 """
 from tornado import web
 
-from prjname.service1 import settings
-from prjname.common.tornado.handlers import health
+from thebest.common import settings
+from thebest.common.tornado.handlers import health
 
 
 APPLICATION = web.Application(

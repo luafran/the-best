@@ -8,13 +8,13 @@ import sys
 from tornado import gen
 import stevedore
 
-from prjname.common import exceptions
-from prjname.common import settings
-from prjname.common.utils import cassandra_adapter
+from thebest.common import exceptions
+from thebest.common import settings
+from thebest.common.utils import cassandra_adapter
 
 
 EXTENSIONS = stevedore.extension.ExtensionManager(
-    namespace='prjname.common.repositories.views')
+    namespace='thebest.common.repositories.views')
 
 
 class KeyValueAdapter(object):  # pylint: disable=R0201,R0903

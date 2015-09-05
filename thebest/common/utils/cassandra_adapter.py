@@ -3,7 +3,7 @@ from cassandra import cluster
 from cassandra.io import libevreactor
 from tornado import concurrent
 
-from prjname.common import exceptions
+from thebest.common import exceptions
 
 
 ConsistencyLevel = cassandra.ConsistencyLevel

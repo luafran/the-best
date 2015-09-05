@@ -5,15 +5,15 @@ import time
 from tornado import gen
 from tornado import ioloop
 
-from prjname.common import exceptions
-from prjname.common import settings
-from prjname.common.policy import configuration
-from prjname.common.policy import enforcer
-from prjname.common.policy import exceptions as policy_exceptions
-from prjname.common.repositories.authorization.subscription_config import SubscriptionConfigRepository
-from prjname.common.tokens import exceptions as token_exceptions
-from prjname.common.tokens.jwt_token import JWTToken
-from prjname.common.tornado.handlers.base import Context
+from thebest.common import exceptions
+from thebest.common import settings
+from thebest.common.policy import configuration
+from thebest.common.policy import enforcer
+from thebest.common.policy import exceptions as policy_exceptions
+from thebest.common.repositories.authorization.subscription_config import SubscriptionConfigRepository
+from thebest.common.tokens import exceptions as token_exceptions
+from thebest.common.tokens.jwt_token import JWTToken
+from thebest.common.tornado.handlers.base import Context
 
 
 # This decorator must be before @gen.coroutine

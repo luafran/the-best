@@ -1,5 +1,5 @@
-from prjname.common.tornado.start_service_command import StartServiceCommand
-from prjname.service1.tornado.application import APPLICATION
+from thebest.common.tornado.start_service_command import StartServiceCommand
+from thebest.service1.tornado.application import APPLICATION
 
 
 class Service1Command(StartServiceCommand):  # pylint: disable=too-few-public-methods

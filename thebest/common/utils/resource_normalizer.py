@@ -3,7 +3,7 @@ Resource normalizer
 """
 from collections import namedtuple
 
-from prjname.common import exceptions
+from thebest.common import exceptions
 import collections
 
 

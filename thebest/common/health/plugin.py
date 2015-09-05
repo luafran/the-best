@@ -8,11 +8,11 @@ class HealthPlugin(object):
     To add a new Health plugins you should use HealthPlugin as your base class
     and override the get_status() method.
     Then add to your setup.py a new entry_point to this class in the
-    'prjname.health.plugins' namespace
+    'thebest.health.plugins' namespace
         setuptools.setup(
             .
             entry_points={
-                'prjname.health.plugins': [
+                'thebest.health.plugins': [
                     'newHealthPlugin = path.to.new.command:NewHealthPlugin',
                 ],
             },

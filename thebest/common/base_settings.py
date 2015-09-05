@@ -4,17 +4,18 @@ Base settings used in all environments
 import datetime
 import os
 
-from prjname.common import settings
+from thebest.common import settings
 
 APPLICATION_ID = '1'
 
-AUTO_RELOAD = False
+AUTO_RELOAD = True
 ENFORCE_POLICIES = True
 STATS_ENABLED = False
 
 JWT_TOKEN_NOT_BEFORE_TIMEDELTA = datetime.timedelta(minutes=1)
 
 LOG_DIR = os.path.expanduser("~")
+LOG_LEVEL = 'DEBUG'
 LOGGER_NAME = 'service'
 ANALYTICS_LOGGER_NAME = 'analytics'
 LOGGING = {
@@ -31,22 +32,20 @@ LOGGING = {
     },
     'handlers': {
         'local_internal': {
-            'level': 'DEBUG',
-            'class': 'logging.FileHandler',
-            'filename': os.path.join(LOG_DIR, 'prjname_service.log'),
+            'class': 'logging.StreamHandler',
             'formatter': 'verbose'
         },
         'local_analytics': {
             'level': 'INFO',
             'class': 'logging.FileHandler',
-            'filename': os.path.join(LOG_DIR, 'prjname_analytics.log'),
+            'filename': os.path.join(LOG_DIR, 'thebest_analytics.log'),
             'formatter': 'analytics'
         },
     },
     'loggers': {
         LOGGER_NAME: {
             'handlers': ['local_internal'],
-            'level': 'DEBUG',
+            'level': settings.LOG_LEVEL,
             'propagate': True,
         },
         ANALYTICS_LOGGER_NAME: {
@@ -59,6 +58,6 @@ LOGGING = {
 
 JSON_SCHEMA_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)),
                                 'json_schema', 'schemas')
-JSON_SCHEMA_BASE_URL = "http://prjname/jsonschema/"
+JSON_SCHEMA_BASE_URL = "http://thebest/jsonschema/"
 
 DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'

@@ -2,14 +2,14 @@ import stevedore
 
 from tornado import gen
 
-from prjname.common import version
-from prjname.common.health.plugin import HealthPlugin
+from thebest.common import version
+from thebest.common.health.plugin import HealthPlugin
 
 
 class HealthMonitor(object):  # pylint: disable=R0903
     def __init__(self):
         self.plugins = stevedore.extension.ExtensionManager(
-            namespace='prjname.health.plugins',
+            namespace='thebest.health.plugins',
             invoke_on_load=True,
         )
 

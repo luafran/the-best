@@ -3,14 +3,14 @@ import importlib
 import itertools
 import os
 
-from prjname.common import exceptions
+from thebest.common import exceptions
 
 
 class SettingsLoader(object):  # pylint: disable=too-few-public-methods
     FROM_ENVIRONMENT = 'environment'
 
-    def __init__(self, settings_package, mfs_environment_name='MFS_ENV',
-                 environment_prefix='MFS', modules_lazy_load=True):
+    def __init__(self, settings_package, mfs_environment_name='TB_ENV',
+                 environment_prefix='TB', modules_lazy_load=True):
         self._mfs_environment = os.environ.get(mfs_environment_name)
         if not self._mfs_environment:
             raise exceptions.GeneralInfoException(

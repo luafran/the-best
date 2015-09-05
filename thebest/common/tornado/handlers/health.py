@@ -3,10 +3,10 @@ Tornado handler for health resource
 """
 import json
 from tornado import gen
-from prjname.common.tornado.handlers import base
+from thebest.common.tornado.handlers import base
 
-from prjname.common import exceptions
-from prjname.common.health.health_monitor import HealthMonitor
+from thebest.common import exceptions
+from thebest.common.health.health_monitor import HealthMonitor
 
 
 HEALTH_MONITOR = HealthMonitor()
@@ -30,6 +30,7 @@ class HealthHandler(base.BaseHandler):
         health_criteria = self.request.query
         service_health = False
         version = None
+        service_name = self.settings.get('service_name')
         try:
             service_health, result, version = yield HEALTH_MONITOR.get_status(
                 health_criteria.get('include_details'))
@@ -42,7 +43,7 @@ class HealthHandler(base.BaseHandler):
             self.support.notify_error(self.LOG_TAG % message)
             result = ex
 
-        self.build_health_response(service_health, result, version)
+        self.build_health_response(service_name, service_health, result, version)
 
     # Helper methods
 
@@ -70,7 +71,8 @@ class HealthHandler(base.BaseHandler):
 
         self.request.query = processed_query
 
-    def build_health_response(self, service_health, result, version,
+    # pylint: disable=too-many-arguments
+    def build_health_response(self, service_name, service_health, result, version,
                               status_code=None):
         """
         Build the health response data with the required format
@@ -85,6 +87,7 @@ class HealthHandler(base.BaseHandler):
         else:
             response_body = {"status": {"health": service_health,
                                         "info": result,
+                                        "service": service_name,
                                         "version": version}}
 
             if request_method == 'GET':

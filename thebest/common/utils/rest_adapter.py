@@ -7,9 +7,9 @@ import urllib
 from tornado import gen
 from tornado import httpclient
 
-from prjname.common import constants
-from prjname.common.utils import enable_curl_rest_adapter
-from prjname.common.utils import dictionaries
+from thebest.common import constants
+from thebest.common.utils import enable_curl_rest_adapter
+from thebest.common.utils import dictionaries
 
 
 class RestAdapter(object):

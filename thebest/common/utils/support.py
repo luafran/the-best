@@ -4,8 +4,8 @@ Generic (domain agnostic) stuff to support application
 import Queue
 import statsd
 
-from prjname.common import constants
-from prjname.common import settings
+from thebest.common import constants
+from thebest.common import settings
 
 
 class Support(object):
@@ -38,7 +38,7 @@ class Support(object):
 
         if self._stats_enabled:
             self._stats_client = statsd.StatsClient(host=settings.STATS_SERVICE_HOSTNAME,
-                                                    port=8125, prefix='prjname.' + environment)
+                                                    port=8125, prefix='thebest.' + environment)
         self._messages_queue = Queue.Queue()
         self.log_entire_request = settings.LOG_LEVEL in ['CRITICAL', 'ERROR']
 

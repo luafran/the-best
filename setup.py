@@ -14,27 +14,27 @@ REQS = [str(ir.req) for ir in PACKAGE_REQS]
 
 if __name__ == "__main__":
     setuptools.setup(
-        name="prjname-service1",
+        name="thebest-service1",
         version="1.1.0",
         description="Project Name Service 1",
         author="The Company",
-        namespace_packages=['prjname'],
+        namespace_packages=['thebest'],
         packages=setuptools.find_packages(PACKAGE_PATH, exclude=["*.test",
                                                                  "*.test.*",
                                                                  "test.*",
                                                                  "test"]),
-        keywords="prjname",
+        keywords="thebest",
         install_requires=REQS,
         include_package_data=True,
         entry_points={
             'console_scripts': [
-                'prjname-runservice = prjname.common.tornado.runservice:main'
+                'thebest-runservice = thebest.common.tornado.runservice:main'
             ],
-            'prjname.services': [
+            'thebest.services': [
                 'service1 = '
-                    'prjname.service1.tornado.service1_command:Service1Command',
+                    'thebest.service1.tornado.service1_command:Service1Command',
             ],
-            'prjname.health.plugins': [
+            'thebest.health.plugins': [
             ],
         },
     )

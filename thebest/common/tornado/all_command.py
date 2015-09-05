@@ -10,7 +10,7 @@ class AllCommand(cliff.command.Command):  # pylint: disable=too-few-public-metho
     def __init__(self, app, app_args):
         super(AllCommand, self).__init__(app, app_args)
         self.all_commands = stevedore.enabled.EnabledExtensionManager(
-            namespace='prjname.services',
+            namespace='thebest.services',
             invoke_on_load=False,
             check_func=lambda plugin: plugin.name != 'all',
         )
