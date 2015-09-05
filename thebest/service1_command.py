@@ -1,5 +1,5 @@
 from thebest.common.start_service_command import StartServiceCommand
-from thebest.service1.application import APPLICATION
+from thebest.application import APPLICATION
 
 
 class Service1Command(StartServiceCommand):  # pylint: disable=too-few-public-methods
@@ -9,4 +9,4 @@ class Service1Command(StartServiceCommand):  # pylint: disable=too-few-public-me
         super(Service1Command, self).__init__(app, app_args, APPLICATION)
 
     def get_description(self):
-        return "service1 service"
+        return "the best"

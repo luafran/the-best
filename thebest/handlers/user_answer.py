@@ -1,5 +1,5 @@
 from thebest.common.handlers import base
-from thebest.service1.repos import items_repository
+from thebest.repos import items_repository
 
 class UserAnswerHandler(base.BaseHandler):
     def get(self):

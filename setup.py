@@ -14,7 +14,7 @@ REQS = [str(ir.req) for ir in PACKAGE_REQS]
 
 if __name__ == "__main__":
     setuptools.setup(
-        name="thebest-service1",
+        name="thebest",
         version="1.1.0",
         description="Project Name Service 1",
         author="The Company",
@@ -32,7 +32,7 @@ if __name__ == "__main__":
             ],
             'thebest.services': [
                 'service1 = '
-                    'thebest.service1.service1_command:Service1Command',
+                    'thebest.service1_command:Service1Command',
             ],
             'thebest.health.plugins': [
             ],

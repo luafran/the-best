@@ -5,7 +5,7 @@ UNKNOWN_VERSION = 'UNKNOWN'
 
 
 def _get_distribution_name():
-    return "thebest-service1"
+    return "thebest"
 
 
 def get_version():

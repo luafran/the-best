@@ -5,9 +5,9 @@ from tornado import web
 
 from thebest.common import settings
 from thebest.common.handlers import health
-from thebest.service1.handlers import user_question
-from thebest.service1.handlers import system_question
-from thebest.service1.handlers import user_answer
+from thebest.handlers import user_question
+from thebest.handlers import system_question
+from thebest.handlers import user_answer
 
 
 APPLICATION = web.Application(
@@ -23,5 +23,5 @@ APPLICATION = web.Application(
         #(r'/(.*)', statics.StaticHandler, {'path': msf_site_settings['template_path'],
         #                                   "default_filename": "index.html"})
     ],
-    service_name='service1',
+    service_name='the-best',
     autoreload=settings.AUTO_RELOAD)
