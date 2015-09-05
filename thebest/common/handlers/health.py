@@ -3,7 +3,7 @@ Tornado handler for health resource
 """
 import json
 from tornado import gen
-from thebest.common.tornado.handlers import base
+from thebest.common.handlers import base
 
 from thebest.common import exceptions
 from thebest.common.health.health_monitor import HealthMonitor

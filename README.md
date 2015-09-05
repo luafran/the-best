@@ -32,7 +32,7 @@ $ curl --proxy '' 'http://localhost:10001/health?include_details=true'
 Build docker image
 
 ```shell
-$ sudo docker build -t quay.io/luafran/tornado-service . 
+$ sudo docker build -t quay.io/luafran/the-best . 
 ```````````
 
 Run docker image

@@ -23,7 +23,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'formatters': {
         'verbose': {
-            'format': '%(asctime)s %(levelname)s %(thread)d %(env)s %(service)s %(handler)s %(requestId)s '
+            'format': '%(asctime)s %(levelname)s %(env)s %(service)s %(handler)s %(requestId)s '
                       '%(message)s'
         },
         'analytics': {

@@ -28,11 +28,11 @@ if __name__ == "__main__":
         include_package_data=True,
         entry_points={
             'console_scripts': [
-                'thebest-runservice = thebest.common.tornado.runservice:main'
+                'thebest-runservice = thebest.common.runservice:main'
             ],
             'thebest.services': [
                 'service1 = '
-                    'thebest.service1.tornado.service1_command:Service1Command',
+                    'thebest.service1.service1_command:Service1Command',
             ],
             'thebest.health.plugins': [
             ],

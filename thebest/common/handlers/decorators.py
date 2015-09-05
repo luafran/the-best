@@ -13,7 +13,7 @@ from thebest.common.policy import exceptions as policy_exceptions
 from thebest.common.repositories.authorization.subscription_config import SubscriptionConfigRepository
 from thebest.common.tokens import exceptions as token_exceptions
 from thebest.common.tokens.jwt_token import JWTToken
-from thebest.common.tornado.handlers.base import Context
+from thebest.common.handlers.base import Context
 
 
 # This decorator must be before @gen.coroutine
