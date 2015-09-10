@@ -8,6 +8,7 @@ DEVELOPER_MESSAGE_KEY = 'developer_message'
 USER_MESSAGE_KEY = 'user_message'
 MORE_INFO_KEY = 'more_info'
 CONTEXT_KEY = 'context'
+REQUEST_ID_KEY = 'request_id'
 
 
 class InfoException(Exception):
@@ -43,6 +44,7 @@ class GeneralInfoException(InfoException):
         self.info[DEVELOPER_MESSAGE_KEY] = 'Exception occurred'
         self.info[USER_MESSAGE_KEY] = 'Service error'
         self.info[CONTEXT_KEY] = context
+        self.info[REQUEST_ID_KEY] = ''
 
         super(GeneralInfoException, self).__init__(self.info)
 
@@ -71,6 +73,21 @@ class BadRequest(BadRequestBase):
         self.info[CONTEXT_KEY] = context
 
         super(BadRequest, self).__init__(self.info)
+
+
+class Conflict(InfoException):
+    """
+    Used to notify a general conflict.
+    context should include argument name for all offending arguments.
+    """
+
+    def __init__(self, context):      # pylint: disable=E1002
+        self.info = dict()
+        self.info[DEVELOPER_MESSAGE_KEY] = 'An invalid request was provided'
+        self.info[USER_MESSAGE_KEY] = 'An invalid request was provided'
+        self.info[CONTEXT_KEY] = context
+
+        super(Conflict, self).__init__(self.info)
 
 
 class InvalidArgument(BadRequestBase):

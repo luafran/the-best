@@ -20,8 +20,6 @@ APPLICATION = web.Application(
          {'application_settings': settings, 'handler': 'SystemQuestion'}, 'system_question'),
         (r'.*/user_answer', user_answer.UserAnswerHandler,
          {'application_settings': settings, 'handler': 'UserAnswer'}, 'user_answer'),
-        #(r'/(.*)', statics.StaticHandler, {'path': msf_site_settings['template_path'],
-        #                                   "default_filename": "index.html"})
     ],
     service_name='the-best',
     autoreload=settings.AUTO_RELOAD)

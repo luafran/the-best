@@ -24,10 +24,10 @@ class Support(object):
         if not session_info:
             session_info = {}
 
-        environment = session_info.get('environment')
+        mfs_environment = session_info.get('mfs_environment')
 
         self._extra = {
-            'env': environment,
+            'env': mfs_environment,
             'service': session_info.get('service'),
             'handler': session_info.get('handler'),
             'requestId': session_info.get('requestId', constants.NO_REQUEST_ID),
@@ -38,7 +38,7 @@ class Support(object):
 
         if self._stats_enabled:
             self._stats_client = statsd.StatsClient(host=settings.STATS_SERVICE_HOSTNAME,
-                                                    port=8125, prefix='thebest.' + environment)
+                                                    port=8125, prefix='mfs.' + mfs_environment)
         self._messages_queue = Queue.Queue()
         self.log_entire_request = settings.LOG_LEVEL in ['CRITICAL', 'ERROR']
 

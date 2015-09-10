@@ -4,6 +4,8 @@ Base settings used in all environments
 import datetime
 import os
 
+import Crypto.PublicKey.RSA as RSA
+
 from thebest.common import settings
 
 APPLICATION_ID = '1'
@@ -13,6 +15,15 @@ ENFORCE_POLICIES = True
 STATS_ENABLED = False
 
 JWT_TOKEN_NOT_BEFORE_TIMEDELTA = datetime.timedelta(minutes=1)
+
+RESOURCES_PATH = os.path.join(
+    os.path.dirname(__file__), '..', 'web', 'static', 'resources')
+
+JSON_SCHEMA_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)),
+                                'json_schema', 'schemas')
+JSON_SCHEMA_BASE_URL = "http://thebest/jsonschema/"
+
+DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
 LOG_DIR = os.path.expanduser("~")
 LOG_LEVEL = 'DEBUG'
@@ -56,8 +67,13 @@ LOGGING = {
     }
 }
 
-JSON_SCHEMA_PATH = os.path.join(os.path.dirname(os.path.realpath(__file__)),
-                                'json_schema', 'schemas')
-JSON_SCHEMA_BASE_URL = "http://thebest/jsonschema/"
+PRIVATE_CERTIFICATE_FILE = os.path.join(
+    os.path.dirname(__file__), 'certs', 'the-best')
+if os.path.exists(PRIVATE_CERTIFICATE_FILE):
+    with open(PRIVATE_CERTIFICATE_FILE, 'r') as fd:
+        PRIVATE_CERTIFICATE = RSA.importKey(fd.read())
+else:
+    PRIVATE_CERTIFICATE = None
 
-DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
+AES_SECRET = ("\\\xb3f\xd6\xf2\xc4H\x18\x11\x87\r`\x14\x97ez\xed\xd8\xfd"
+              "\x03pF\xa1\xc1\x94\xee\xe3\x1b\xa9p\x81.")

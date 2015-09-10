@@ -12,12 +12,12 @@ try:
     import os
     from six.moves.urllib.parse import urlparse  # pylint: disable=no-name-in-module
 
-    proxy_env = os.environ.get('http_proxy')
-    if proxy_env:
-        parsed_proxy = urlparse(proxy_env)
+    PROXY_ENV = os.environ.get('http_proxy')
+    if PROXY_ENV:
+        PARSED_PROXY = urlparse(PROXY_ENV)
         PROXY = {
-            'proxy_host': parsed_proxy.hostname,
-            'proxy_port': parsed_proxy.port
+            'proxy_host': PARSED_PROXY.hostname,
+            'proxy_port': PARSED_PROXY.port
         }
 
     httpclient.AsyncHTTPClient.configure(

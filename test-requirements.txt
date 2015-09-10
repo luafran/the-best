@@ -1,3 +1,5 @@
+nose
+nose-timer
 coverage>=3.7.1
 ipdb
 mock>=1.0.1

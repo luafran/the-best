@@ -1,0 +1,3 @@
+"""
+Small tests modules
+"""

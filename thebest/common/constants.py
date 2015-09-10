@@ -15,3 +15,12 @@ PRODUCTS = 'products'
 ANDROID = 'ANDROID'
 IOS = 'IOS'
 
+# HTTP header name for request-id
+REQUEST_ID_HTTP_HEADER = "X-Request-Id"
+
+# HTTP header name for X-Request-Timestamp
+LOCALTIME_HTTP_HEADER = "X-LocalTime"
+
+# HTTP header name for Accept-Language
+ACCEPT_LANGUAGE_HTTP_HEADER = "Accept-Language"
+DEFAULT_LANGUAGE = "en"

@@ -20,14 +20,14 @@ class SettingsLoader(object):  # pylint: disable=too-few-public-methods
         self._environment_prefix = environment_prefix
         self._settings_modules = []
 
-        self._settings_modules_not_fully_loaded = True
+        self._modules_not_fully_loaded = True
         if not modules_lazy_load:
             self._lazy_module_import()
 
     def _lazy_module_import(self):
         modules = [
             '{0}.base_settings'.format(self._settings_package),
-            'miramar.common.base_settings']
+            'thebest.common.base_settings']
 
         self._settings_modules = []
         for module_name in modules:
@@ -36,14 +36,14 @@ class SettingsLoader(object):  # pylint: disable=too-few-public-methods
                     importlib.import_module(module_name))
             except ImportError:
                 pass
-        self._settings_modules_not_fully_loaded = False
+        self._modules_not_fully_loaded = False
 
     def __getattr__(self, name):
         setting_value = self._convert(os.environ.get(
             "{0}_{1}".format(self._environment_prefix, name.upper())))
 
         if not setting_value:
-            if self._settings_modules_not_fully_loaded:
+            if self._modules_not_fully_loaded:
                 self._lazy_module_import()
 
             all_modules = itertools.chain(self._settings_modules)

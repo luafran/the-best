@@ -18,8 +18,8 @@ class HealthPlugin(object):
             },
         )
     """
-    HEALTH_SEVERITY = (OK, WARNING, ERROR) = ((0, 'OK'), (1, 'WARNING'),
-                                              (2, 'ERROR'))
+    HEALTH_SEVERITY = (GOOD, WARNING, ERROR) = ((0, 'OK'), (1, 'WARNING'),
+                                                (2, 'ERROR'))
     HEALTH_EXPOSURE = (LOW, MEDIUM, HIGH) = ('LOW', 'MEDIUM', 'HIGH')
 
     @abc.abstractmethod

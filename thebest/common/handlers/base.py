@@ -2,26 +2,47 @@
 BaseHandler
 """
 import collections
+import dateutil.parser
 import json
 import os
 import sys
+import uuid
+from datetime import datetime
 
 from logging import config
 from logging import getLogger
+import strict_rfc3339
 from tornado import httpclient
 from tornado import web
+from tornado import locale
 
 from thebest.common import constants
 from thebest.common import exceptions
 from thebest.common import settings
+from thebest.common import translations
 from thebest.common.utils.support import Support
+
 
 METHODS = (OPTIONS, GET, POST, PUT, DELETE, HEAD, PATCH) = (
     'OPTIONS', 'GET', 'POST', 'PUT', 'DELETE', 'HEAD', 'PATCH'
 )
 
+translations.load_json_translations(settings.RESOURCES_PATH)
+locale.set_default_locale(constants.DEFAULT_LANGUAGE)
 
-class BaseHandler(web.RequestHandler):  # pylint: disable=too-many-public-methods
+
+class BaseStaticFileHandler(web.StaticFileHandler):
+    def set_default_headers(self):
+        self.set_header("Server", "Miramar Web Server")
+        self.set_header('Access-Control-Allow-Credentials', 'true')
+        self.set_header('Access-Control-Allow-Origin', '*')
+        self.set_header('Access-Control-Max-Age', '1728000')
+
+    def data_received(self, chunk):
+        pass
+
+
+class BaseHandler(web.RequestHandler):  # pylint: disable=too-many-instance-attributes
     """
     BaseHandler
     """
@@ -31,28 +52,35 @@ class BaseHandler(web.RequestHandler):  # pylint: disable=too-many-public-method
         """
         super(BaseHandler, self).__init__(application, request, **kwargs)
         self.context = None
+        self.created_time = datetime.now()
 
     def data_received(self, chunk):
         pass
 
+    def _get_language(self):
+        return self.get_browser_locale(constants.DEFAULT_LANGUAGE).code
+
     def initialize(self, application_settings, handler=None):  # pylint: disable=arguments-differ
         self.application_settings = application_settings
         self.handler = handler
-        self.request_id = self.request.headers.get(constants.REQUEST_ID_HTTP_HEADER)
+        self.request_id = self.request.headers.get(constants.REQUEST_ID_HTTP_HEADER,
+                                                   'be-'+str(uuid.uuid4()))
+        self.request_timestamp = self.request.headers.get(constants.LOCALTIME_HTTP_HEADER)
+        self.request.language = self._get_language()
 
         config.dictConfig(settings.LOGGING)
         logger = getLogger(settings.LOGGER_NAME)
 
-        environment_name = 'TB_ENV'
+        mfs_environment_name = 'TB_ENV'
 
-        environment = os.environ.get(environment_name)
-        if not environment:
+        mfs_environment = os.environ.get(mfs_environment_name)
+        if not mfs_environment:
             raise exceptions.GeneralInfoException(
-                '{0} environment variable not found'.format(environment_name))
-        self.environment = environment
+                '{0} environment variable not found'.format(mfs_environment_name))
+        self.mfs_environment = mfs_environment
 
         session_info = {
-            'environment': environment,
+            'mfs_environment': mfs_environment,
             'service': self.settings.get('service_name'),
             'handler': handler,
             'requestId': self.request_id
@@ -79,11 +107,11 @@ class BaseHandler(web.RequestHandler):  # pylint: disable=too-many-public-method
             self.support.notify_debug(
                 "[BaseHandler] request: %s %s" % (str(request.method), str(request.uri)))
             self.support.notify_debug(
-                "[BaseHandler] query: %s" % str(request.query))
+                "[BaseHandler] request query: %s" % str(request.query))
             self.support.notify_debug(
-                "[BaseHandler] headers: %s" % str(request.headers))
+                "[BaseHandler] request headers: %s" % str(request.headers))
             self.support.notify_debug(
-                "[BaseHandler] body: %s" % str(request.body))
+                "[BaseHandler] request body: %s" % str(request.body))
 
             body_size = sys.getsizeof(request.body)
             self.support.stat_increment('net.requests.total_count')
@@ -223,6 +251,17 @@ class BaseHandler(web.RequestHandler):  # pylint: disable=too-many-public-method
 
         self.support.stat_increment('net.responses.total_count')
         self.support.stat_increment('net.responses.total_bytes', sys.getsizeof(body))
+        self.support.stat_increment('net.responses.' + str(self.get_status()))
+
+        total_time = datetime.now() - self.created_time
+        timing = int(total_time.total_seconds() * 1000)
+        self.support.notify_debug("[BaseHandler] Processing Time: %i ms" % timing)
+        self.support.stat_timing('net.responses.time', timing)
+
+        self.support.notify_debug(
+            "[BaseHandler] response code: %s" % str(self.get_status()))
+        self.support.notify_debug(
+            "[BaseHandler] response body: %s" % str(body))
 
         self.finish()
 
@@ -232,35 +271,32 @@ class BaseHandler(web.RequestHandler):  # pylint: disable=too-many-public-method
         """
         if isinstance(ex, exceptions.BadRequestBase):
             self.set_status(400)
-            response_body = str(ex)
         elif isinstance(ex, exceptions.UnauthorizedBase):
             self.set_status(401)
-            response_body = str(ex)
         elif isinstance(ex, exceptions.ForbiddenBase):
             self.set_status(403)
-            response_body = str(ex)
         elif isinstance(ex, exceptions.NotFoundBase):
             self.set_status(404)
-            response_body = str(ex)
+        elif isinstance(ex, exceptions.Conflict):
+            self.set_status(409)
         elif isinstance(ex, exceptions.PermanentServiceError):
             self.set_status(500)
-            response_body = str(ex)
         elif isinstance(ex, exceptions.TemporaryServiceError):
             self.set_status(503)
-            response_body = str(ex)
         elif isinstance(ex, web.HTTPError):
             self.set_status(ex.status_code)
-            response_body = {"message": str(ex)}
+            ex = exceptions.GeneralInfoException('Web HTTPError')
         elif isinstance(ex, httpclient.HTTPError):
             self.set_status(ex.code)
-            response_body = {"message": ex.message}
+            ex = exceptions.GeneralInfoException('Client HTTPError')
         else:
             self.set_status(500)
             import traceback
             formatted_lines = traceback.format_exc().splitlines()
             ex = exceptions.GeneralInfoException(formatted_lines[-1])
-            response_body = str(ex)
 
+        ex.info[exceptions.REQUEST_ID_KEY] = self.request_id
+        response_body = str(ex)
         return response_body
 
     def options(self, *args, **kwargs):
@@ -293,7 +329,7 @@ class Context(object):  # pylint: disable=too-many-instance-attributes
     Context
     """
 
-    def __init__(self, request):
+    def __init__(self, request=None):
         """
         Constructor
         """
@@ -304,8 +340,24 @@ class Context(object):  # pylint: disable=too-many-instance-attributes
         self.role = None
         self.products = None
         self.token = None
+        self.request_id = None
+        self.request_timestamp = None
+        self.request_timezone = None
+        self.timestamp_header_value = None
+        self.language = None
 
-        self.request_id = request.headers.get(constants.REQUEST_ID_HTTP_HEADER)
+        if request:
+            self.request_id = request.headers.get(
+                constants.REQUEST_ID_HTTP_HEADER)
+            self.timestamp_header_value = request.headers.get(
+                constants.LOCALTIME_HTTP_HEADER, "")
+            if strict_rfc3339.validate_rfc3339(self.timestamp_header_value):
+                self.request_timestamp = self.timestamp_header_value
+                self.request_timezone = dateutil.parser.parse(
+                    self.request_timestamp).strftime('%z')
+                self.request_timezone = ':'.join([
+                    self.request_timezone[:-2], self.request_timezone[-2:]])
+            self.language = getattr(request, 'language', constants.DEFAULT_LANGUAGE)
 
         token = getattr(request, 'token', None)
         self.update_from_token(token)
@@ -330,3 +382,8 @@ class Context(object):  # pylint: disable=too-many-instance-attributes
                 'deviceId': self.device_id
             }
         }
+
+    def __bool__(self):
+        return True if self.account_id and self.client_id else False
+
+    __nonzero__ = __bool__

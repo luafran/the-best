@@ -15,7 +15,7 @@ class HealthMonitor(object):  # pylint: disable=R0903
 
     @gen.coroutine
     def get_status(self, include_details=False):
-        service_health = HealthPlugin.OK
+        service_health = HealthPlugin.GOOD
 
         plugin_status = []
         for plugin in self.plugins:
