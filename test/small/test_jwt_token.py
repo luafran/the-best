@@ -45,7 +45,7 @@ class TestJWTToken(unittest.TestCase):
 
         self.assertTrue(self.expected_payload, token_to_verify)
 
-    def test_token_verifycation_fails_because_certificate_is_wrong(self):
+    def test_token_verification_fails_because_certificate_is_wrong(self):
         token = JWTToken(payload=self.expected_payload, certificate=self.key)
         self.assertRaises(exceptions.InvalidToken, JWTToken, token=str(token),
                           certificate=RSA.generate(2048))
