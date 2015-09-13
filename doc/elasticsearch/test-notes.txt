@@ -1,0 +1,5 @@
+curl -X POST 'http://localhost:9200/the-best-test/category' -d '{"name": "car"}'
+curl -X POST 'http://localhost:9200/the-best-test/category' -d '{"name": "wine"}'
+curl -X POST 'http://localhost:9200/the-best-test/category' -d '{"name": "beer"}'
+curl -X POST 'http://localhost:9200/the-best-test/category' -d '{"name": "movie"}'
+curl -X POST 'http://localhost:9200/the-best-test/category' -d '{"name": "actor"}'
