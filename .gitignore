@@ -3,7 +3,7 @@
 *.egg-info
 dist/*
 */dist/*
-continuous_integration/reports/*
+ci/reports/*
 .coverage*
 tags
 *_pkg/global-requirements.txt
