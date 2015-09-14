@@ -9,4 +9,4 @@ class UserQuestionHandler(base.BaseHandler):
     @gen.coroutine
     def get(self):
         items = yield items_repository.get_items()
-        self.render('user_question2.tpl', items=items)
+        self.render('user_question.tpl', items=items)

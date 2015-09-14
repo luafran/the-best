@@ -27,7 +27,6 @@ APPLICATION = web.Application(
          {'application_settings': settings, 'handler': 'CategorySuggestions'}, 'category_suggestions'),
         (r'/static/(.*)', web.StaticFileHandler,
          {'path': os.path.join(base_dir, "web", "static")}),
-
     ],
     service_name='the-best',
     template_path=os.path.join(base_dir, "web", "templates"),
