@@ -9,6 +9,7 @@ from thebest.common.handlers import health
 from thebest.handlers import user_question
 from thebest.handlers import system_question
 from thebest.handlers import user_answer
+from thebest.handlers import category_suggestions
 
 base_dir = os.path.dirname(__file__)
 
@@ -22,6 +23,8 @@ APPLICATION = web.Application(
          {'application_settings': settings, 'handler': 'SystemQuestion'}, 'system_question'),
         (r'.*/user_answer', user_answer.UserAnswerHandler,
          {'application_settings': settings, 'handler': 'UserAnswer'}, 'user_answer'),
+        (r'.*/category/suggestions', category_suggestions.CategorySuggestionsHandler,
+         {'application_settings': settings, 'handler': 'CategorySuggestions'}, 'category_suggestions'),
         (r'/static/(.*)', web.StaticFileHandler,
          {'path': os.path.join(base_dir, "web", "static")}),
 

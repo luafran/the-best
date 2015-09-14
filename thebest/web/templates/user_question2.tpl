@@ -1,6 +1,5 @@
 <html>
 <head>
-    <link rel="stylesheet" href="/examples/stylesheets/ui-lightness/jquery-ui-1.8.16.custom.css" type="css">
     <script type="text/javascript" src="/static/jquery-1.11.3.min.js"></script>
     <script type="text/javascript" src="/static/jquery-ui.min.js"></script>
 </head>
@@ -10,20 +9,15 @@
     $(function() {
         $("#keyword").autocomplete({
             source: function(request, response) {
-                var prefix = { "name": request.term.toLowerCase() };
-                var postData = {
-                    "query": { "prefix": prefix },
-                    "fields": ["name", "_id"]
-                };
+                var prefix = request.term.toLowerCase();
                 $.ajax({
-                    url: "http://localhost:9200/the-best-test/category/_search",
+                    url: "/category/suggestions?prefix=" + prefix,
                     type: "GET",
                     dataType: "JSON",
-                    data: JSON.stringify(postData),
                     success: function(data) {
-                        response($.map(data.hits.hits, function(item) {
+                        response($.map(data.suggestions, function(item) {
                             return {
-                                label: item._source.name,
+                                label: item.name,
                                 id: item._id
                             }
                         }));
