@@ -15,7 +15,7 @@ REQS = [str(ir.req) for ir in PACKAGE_REQS]
 if __name__ == "__main__":
     setuptools.setup(
         name="thebest",
-        version="1.1.0",
+        version="1.0.0",
         description="Project Name Service 1",
         author="The Company",
         namespace_packages=['thebest'],

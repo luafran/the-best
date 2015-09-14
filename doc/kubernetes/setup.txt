@@ -1,0 +1,5 @@
+kubectl create -f elasticsearch-svc.yaml
+kubectl create -f elasticsearch-rc.yaml
+kubectl create -f the-best-svc.yaml
+kubectl create -f the-best-rc.yaml
+kubectl get pods -l app=elasticsearch -l version=1.7 -o wide

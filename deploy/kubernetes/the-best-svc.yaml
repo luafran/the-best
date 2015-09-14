@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: the-best
+spec:
+  selector:
+    app: the-best
+    api: "1"
+  ports:
+  - name: port1
+    protocol: TCP
+    port: 80
+    targetPort: 10001

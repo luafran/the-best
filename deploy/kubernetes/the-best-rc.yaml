@@ -1,0 +1,27 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  name: the-best-1.0.0
+spec:
+  selector:
+    app: the-best
+    version: 1.0.0
+  replicas: 2
+  template:
+    metadata:
+      labels:
+        app: the-best
+        version: 1.0.0
+        api: "1"
+    spec:
+      containers:
+      - name: the-best
+        image: quay.io/luafran/the-best:v1.0.0
+        ports:
+        - containerPort: 10001
+          protocol: TCP
+        env:
+        - name: TB_ENV
+          value: kube-test
+        - name: TB_AUTO_RELOAD
+          value: "False"
