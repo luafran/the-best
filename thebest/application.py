@@ -27,4 +27,5 @@ APPLICATION = web.Application(
 
     ],
     service_name='the-best',
+    template_path=os.path.join(base_dir, "web", "templates"),
     autoreload=settings.AUTO_RELOAD)

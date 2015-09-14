@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>FriendFeed - {{ _("Sign in") }}</title>
+        <title>{{ _("System Question") }}</title>
     </head>
     <body>
         <form action="user_answer" >
