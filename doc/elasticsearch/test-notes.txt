@@ -1,5 +1,194 @@
-curl -X POST 'http://localhost:9200/the-best-test/category' -d '{"name": "car"}'
-curl -X POST 'http://localhost:9200/the-best-test/category' -d '{"name": "wine"}'
-curl -X POST 'http://localhost:9200/the-best-test/category' -d '{"name": "beer"}'
-curl -X POST 'http://localhost:9200/the-best-test/category' -d '{"name": "movie"}'
-curl -X POST 'http://localhost:9200/the-best-test/category' -d '{"name": "actor"}'
+Check after install
+
+---------------
+https://www.elastic.co/guide/en/elasticsearch/guide/current/_index_time_search_as_you_type.html
+
+
+curl -X DELETE 'http://localhost:9200/the-best-test/_mapping/category'
+curl -X PUT 'http://localhost:9200/the-best-test' -d '{
+    "settings": {
+        "number_of_shards": 1,
+        "analysis": {
+            "filter": {
+                "autocomplete_filter": {
+                    "type": "edge_ngram",
+                    "min_gram": 1,
+                    "max_gram": 20
+                }
+            },
+            "analyzer": {
+                "autocomplete": {
+                    "type": "custom",
+                    "tokenizer": "standard",
+                    "filter": [
+                        "lowercase",
+                        "autocomplete_filter"
+                    ]
+                }
+            }
+        }
+    }
+}'
+
+curl -X PUT 'http://localhost:9200/the-best-test/_mapping/category' -d '{
+    "category": {
+        "properties": {
+            "name": {
+                "type": "string",
+                "analyzer": "autocomplete"
+            }
+        }
+    }
+}'
+
+
+---------------
+Completion Suggester
+https://www.elastic.co/guide/en/elasticsearch/reference/current/search-suggesters-completion.html
+
+The completion suggester is a so-called prefix suggester. It does not do spell correction like the
+term or phrase suggesters but allows basic auto-complete functionality.
+
+Setup
+
+curl -X DELETE 'http://localhost:9200/the-best-test/_mapping/category'
+curl -X PUT localhost:9200/the-best-test/category/_mapping -d '{
+  "category" : {
+        "properties" : {
+            "name" : { "type" : "string" },
+            "suggest" : { "type" : "completion",
+                          "index_analyzer" : "simple",
+                          "search_analyzer" : "simple",
+                          "payloads" : true
+            }
+        }
+    }
+}'
+
+
+Query
+
+curl -X POST 'http://localhost:9200/the-best-test/_suggest?pretty' -d '{
+    "category-suggest" : {
+        "text" : "c",
+        "completion" : {
+            "field" : "suggest"
+        }
+    }
+}'
+
+
+Insert some data
+
+curl -X POST 'http://localhost:9200/the-best-test/category' -d '
+{
+    "name": "car",
+    "suggest": {
+        "input": "car",
+        "output": "car",
+        "payload": {},
+        "weight": 1
+    }
+}'
+
+curl -X POST 'http://localhost:9200/the-best-test/category' -d '
+{
+    "name": "wine",
+    "suggest": {
+        "input": "wine",
+        "output": "wine",
+        "payload": {},
+        "weight": 1
+    }
+}'
+
+curl -X POST 'http://localhost:9200/the-best-test/category' -d '
+{
+    "name": "beer",
+    "suggest": {
+        "input": "beer",
+        "output": "beer",
+        "payload": {},
+        "weight": 1
+    }
+}'
+
+curl -X POST 'http://localhost:9200/the-best-test/category' -d '
+{
+    "name": "movie",
+    "suggest": {
+        "input": "movie",
+        "output": "movie",
+        "payload": {},
+        "weight": 1
+    }
+}'
+
+curl -X POST 'http://localhost:9200/the-best-test/category' -d '
+{
+    "name": "actor",
+    "suggest": {
+        "input": "actor",
+        "output": "actor",
+        "payload": {},
+        "weight": 1
+    }
+}'
+
+curl -X POST 'http://localhost:9200/the-best-test/category' -d '
+{
+    "name": "beach",
+    "suggest": {
+        "input": "beach",
+        "output": "beach",
+        "payload": {},
+        "weight": 1
+    }
+}'
+
+curl -X POST 'http://localhost:9200/the-best-test/category' -d '
+{
+    "name": "helicopter",
+    "suggest": {
+        "input": "helicopter",
+        "output": "helicopter",
+        "payload": {},
+        "weight": 1
+    }
+}'
+
+curl -X POST 'http://localhost:9200/the-best-test/category' -d '
+{
+    "name": "hotel",
+    "suggest": {
+        "input": "hotel",
+        "output": "hotel",
+        "payload": {},
+        "weight": 1
+    }
+}'
+
+curl -X POST 'http://localhost:9200/the-best-test/category' -d '
+{
+    "name": "hospital",
+    "suggest": {
+        "input": "hospital",
+        "output": "hospital",
+        "payload": {},
+        "weight": 1
+    }
+}'
+
+
+Simple Prefix Query
+https://www.elastic.co/guide/en/elasticsearch/guide/current/prefix-query.html
+
+curl -X GET 'http://localhost:9200/the-best-test/category/_search?pretty' -d '
+{
+    "query": {
+        "prefix": {
+            "name": "ho"
+        }
+    }
+}'
+
