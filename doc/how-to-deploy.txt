@@ -1,0 +1,24 @@
+Traditional Way
+===============
+
+Deploy service from your local repository
+
+```shell
+fab -i ~/.ssh/thebest.pem --fabfile deploy/fabfile.py dev make_and_deploy
+`````
+
+Docker
+======
+
+Build images
+
+```shell
+build-docker.sh
+`````
+
+Run images
+
+```shell
+sudo docker run --name elasticsearch -d --net host elasticsearch:1.7
+sudo docker run --name the-best -d --net host -p 10001:10001 -e TB_ENV=dev quay.io/luafran/the-best:1.0.0
+`````

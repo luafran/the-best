@@ -1,0 +1,11 @@
+Install stack for application server (only once)
+
+```shell
+fab -i ~/.ssh/thebest.pem --fabfile deploy/fabfile.py dev install_app_server
+`````
+
+Install elasticsearch (only once)
+
+```shell
+fab -i ~/.ssh/thebest.pem --fabfile deploy/fabfile.py dev install_elasticsearch
+`````

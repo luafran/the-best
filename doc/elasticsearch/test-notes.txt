@@ -181,6 +181,7 @@ curl -X POST 'http://localhost:9200/the-best-test/category' -d '
 
 
 Simple Prefix Query
+-------------------
 https://www.elastic.co/guide/en/elasticsearch/guide/current/prefix-query.html
 
 curl -X GET 'http://localhost:9200/the-best-test/category/_search?pretty' -d '
@@ -192,6 +193,27 @@ curl -X GET 'http://localhost:9200/the-best-test/category/_search?pretty' -d '
     }
 }'
 
+
+Search without duplicates
+-------------------------
+http://stackoverflow.com/questions/25448186/remove-duplicate-documents-from-a-search-in-elasticsearch
+https://www.elastic.co/guide/en/elasticsearch/guide/current/top-hits.html
+
+curl -XPOST 'http://localhost:9200/the-best-test/item/_search?search_type=count&pretty=true' -d '
+{
+    "query": {
+        "prefix": {
+            "category": "ho"
+        }
+    },
+    "aggs": {
+        "categories": {
+            "terms": {
+                "field": "category"
+            }
+        }
+    }
+}'
 
 
 Elasticsearch API used by the-best
