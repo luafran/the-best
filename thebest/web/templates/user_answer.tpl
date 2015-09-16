@@ -4,7 +4,7 @@
     </head>
     <body>
         <div class="groupMenu">
-            {{ _("The best") }} {{ user_item }} {{ _("is") }} {{ system_answer }}
+            {{ _("The best") }} <b>{{ user_category }}</b> {{ _("is") }} {{ system_answer }}
         </div>
     </body>
 </html>

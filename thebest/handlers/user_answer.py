@@ -8,6 +8,6 @@ class UserAnswerHandler(base.BaseHandler):
 
     @gen.coroutine
     def get(self):
-        user_item = self.get_query_arguments('user_item')[0]
-        system_answer = yield items_repository.get_item_answer(user_item)
-        self.render('user_answer.tpl', user_item=user_item, system_answer=system_answer)
+        user_category = self.get_query_arguments('user_category')[0]
+        system_answer = yield items_repository.get_category_answer(user_category)
+        self.render('user_answer.tpl', user_category=user_category, system_answer=system_answer)

@@ -1,43 +1,48 @@
 from tornado import gen
 from tornado_elasticsearch import AsyncElasticsearch
 
-ITEMS = {
-    'car': 'Fiat 128',
-    'wine': 'Toro',
-    'beer': 'Imperial',
-    'movie': 'Back to the future',
-    'actor': 'Richard Dean Anderson'
-}
-
-
-@gen.coroutine
-def get_items():
-    elastic_search = AsyncElasticsearch()
-    result = yield elastic_search.search(index='the-best-test')
-    hits = result.get('hits').get('hits')
-    result = [hit.get('_source').get('name') for hit in hits]
-    # raise gen.Return(ITEMS.keys())
-    raise gen.Return(result)
-
-
-@gen.coroutine
-def get_item_answer(item):
-    raise gen.Return(ITEMS[item])
-
 
 @gen.coroutine
 def get_category_suggestions(prefix):
     elastic_search = AsyncElasticsearch()
     body = {
-        'query': {
-            'prefix': {
-                'name': prefix
+        'item-suggest': {
+            'text': prefix,
+            'completion': {
+                'field': 'suggest'
             }
         }
     }
 
-    result = yield elastic_search.search(index='the-best-test', doc_type='category', body=body)
-    hits = result.get('hits').get('hits')
-    result = [hit.get('_source').get('name') for hit in hits]
+    result = yield elastic_search.suggest(index='the-best-test', body=body)
+    options = result.get('item-suggest')[0].get('options')
+    result = [option.get('text') for option in options]
 
     raise gen.Return(result)
+
+
+@gen.coroutine
+def get_category_for_user_question():
+    elastic_search = AsyncElasticsearch()
+    body = {
+    }
+
+    result = yield elastic_search.search(index='the-best-test', doc_type='item', body=body)
+    hits = result.get('hits').get('hits')
+    result = [hit.get('_source').get('category') for hit in hits]
+    selected_answer = result[0]
+    raise gen.Return(selected_answer)
+
+
+@gen.coroutine
+def get_category_answer(category):
+    elastic_search = AsyncElasticsearch()
+    params = {
+        'q': 'category:' + category
+    }
+    result = yield elastic_search.search(index='the-best-test', doc_type='item', params=params)
+    hits = result.get('hits').get('hits')
+    result = [hit.get('_source').get('answer') for hit in hits]
+    selected_answer = result[0]
+    raise gen.Return(selected_answer)
+

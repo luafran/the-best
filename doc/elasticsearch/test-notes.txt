@@ -51,11 +51,11 @@ term or phrase suggesters but allows basic auto-complete functionality.
 
 Setup
 
-curl -X DELETE 'http://localhost:9200/the-best-test/_mapping/category'
-curl -X PUT localhost:9200/the-best-test/category/_mapping -d '{
-  "category" : {
+curl -X DELETE 'http://localhost:9200/the-best-test/_mapping/item'
+curl -X PUT localhost:9200/the-best-test/item/_mapping -d '{
+  "items" : {
         "properties" : {
-            "name" : { "type" : "string" },
+            "category" : { "type" : "string" },
             "suggest" : { "type" : "completion",
                           "index_analyzer" : "simple",
                           "search_analyzer" : "simple",
@@ -65,17 +65,17 @@ curl -X PUT localhost:9200/the-best-test/category/_mapping -d '{
     }
 }'
 
-
 Query
 
 curl -X POST 'http://localhost:9200/the-best-test/_suggest?pretty' -d '{
-    "category-suggest" : {
-        "text" : "c",
+    "item-suggest" : {
+        "text" : "ho",
         "completion" : {
             "field" : "suggest"
         }
     }
 }'
+
 
 
 Insert some data
@@ -192,3 +192,51 @@ curl -X GET 'http://localhost:9200/the-best-test/category/_search?pretty' -d '
     }
 }'
 
+
+
+Elasticsearch API used by the-best
+==================================
+
+Suggest question
+----------------
+
+Setup
+
+curl -X DELETE 'http://localhost:9200/the-best-test/_mapping/item'
+curl -X PUT localhost:9200/the-best-test/item/_mapping -d '{
+  "item" : {
+        "properties" : {
+            "category" : { "type" : "string" },
+            "suggest" : { "type" : "completion",
+                          "index_analyzer" : "simple",
+                          "search_analyzer" : "simple",
+                          "payloads" : true
+            }
+        }
+    }
+}'
+
+Query
+
+curl -X POST 'http://localhost:9200/the-best-test/_suggest?pretty' -d '{
+    "item-suggest" : {
+        "text" : "c",
+        "completion" : {
+            "field" : "suggest"
+        }
+    }
+}'
+
+
+Insert a new item
+-----------------
+
+Currently it is a batch process
+
+curl -s -XPOST localhost:9200/_bulk --data-binary @requests; echo
+
+
+Get answer
+----------
+
+curl -X GET 'http://localhost:9200/the-best-test/item/_search?q=category:hotel&pretty'

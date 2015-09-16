@@ -1,12 +1,14 @@
-{"index":{ "_index": "the-best-test", "_type": "items", "_id": "1" } }
-{"category": "car", "answer": "Ferrari", "suggest": {"input": "car", "output": "car","payload": {}, "weight": 1}}
-{"index":{ "_index": "the-best-test", "_type": "items", "_id": "2" } }
+{"index":{ "_index": "the-best-test", "_type": "item" } }
+{"category": "Beach", "answer": "Bombas", "suggest": {"input": "car", "output": "car","payload": {}, "weight": 1}}
+{"index":{ "_index": "the-best-test", "_type": "item" } }
 {"category": "beer", "answer": "Imperial", "suggest": {"input": "beer", "output": "beer","payload": {}, "weight": 1}}
-{"index":{ "_index": "the-best-test", "_type": "items", "_id": "3" } }
+{"index":{ "_index": "the-best-test", "_type": "item" } }
+{"category": "car", "answer": "Ferrari", "suggest": {"input": "car", "output": "car","payload": {}, "weight": 1}}
+{"index":{ "_index": "the-best-test", "_type": "item" } }
 {"category": "helicoper", "answer": "MD-500", "suggest": {"input": "helicopter", "output": "helicopter","payload": {}, "weight": 1}}
-{"index":{ "_index": "the-best-test", "_type": "items", "_id": "4" } }
+{"index":{ "_index": "the-best-test", "_type": "item" } }
 {"category": "hospital", "answer": "Allende", "suggest": {"input": "hospital", "output": "hospital","payload": {}, "weight": 1}}
-{"index":{ "_index": "the-best-test", "_type": "items", "_id": "5" } }
+{"index":{ "_index": "the-best-test", "_type": "item" } }
 {"category": "hotel", "answer": "Holiday Inn", "suggest": {"input": "hotel", "output": "hotel","payload": {}, "weight": 1}}
-{"index":{ "_index": "the-best-test", "_type": "items", "_id": "6" } }
+{"index":{ "_index": "the-best-test", "_type": "item" } }
 {"category": "hotel", "answer": "Sheraton", "suggest": {"input": "hotel", "output": "hotel","payload": {}, "weight": 1}}
