@@ -45,6 +45,7 @@ curl -X PUT 'http://localhost:9200/the-best-test/_mapping/category' -d '{
 ---------------
 Completion Suggester
 https://www.elastic.co/guide/en/elasticsearch/reference/current/search-suggesters-completion.html
+https://www.elastic.co/blog/you-complete-me
 
 The completion suggester is a so-called prefix suggester. It does not do spell correction like the
 term or phrase suggesters but allows basic auto-complete functionality.
@@ -77,7 +78,7 @@ curl -X POST 'http://localhost:9200/the-best-test/_suggest?pretty' -d '{
 }'
 
 
-
+--------------------------------------------
 Insert some data
 
 curl -X POST 'http://localhost:9200/the-best-test/category' -d '
@@ -255,7 +256,7 @@ Insert a new item
 
 Currently it is a batch process
 
-curl -s -XPOST localhost:9200/_bulk --data-binary @requests; echo
+curl -s -XPOST localhost:9200/_bulk --data-binary @sysconfig/elasticsearch/initial-data; echo
 
 
 Get answer
