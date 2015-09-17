@@ -3,11 +3,11 @@ from tornado_elasticsearch import AsyncElasticsearch
 
 
 @gen.coroutine
-def get_category_suggestions(prefix):
+def get_question_suggestions(text):
     elastic_search = AsyncElasticsearch()
     body = {
         'item-suggest': {
-            'text': prefix,
+            'text': text,
             'completion': {
                 'field': 'suggest'
             }

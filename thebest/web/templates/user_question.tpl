@@ -10,16 +10,16 @@
             $(function() {
                 $("#category").autocomplete({
                     source: function(request, response) {
-                        var prefix = request.term.toLowerCase();
+                        var text = request.term.toLowerCase();
                         $.ajax({
-                            url: "/category/suggestions?prefix=" + prefix,
+                            url: "/api/suggestions/question?text=" + text,
                             type: "GET",
                             dataType: "JSON",
                             success: function(data) {
                                 response($.map(data.suggestions, function(item) {
                                     return {
-                                        label: item.name,
-                                        id: item._id
+                                        label: item.text,
+                                        id: item.itemId
                                     }
                                 }));
                             },
