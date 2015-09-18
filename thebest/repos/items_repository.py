@@ -22,7 +22,7 @@ def get_question_suggestions(text):
 
 
 @gen.coroutine
-def get_category_for_user_question():
+def get_question_for_user():
     elastic_search = AsyncElasticsearch()
     body = {
     }
@@ -35,14 +35,13 @@ def get_category_for_user_question():
 
 
 @gen.coroutine
-def get_category_answer(category):
+def get_answer(question):
     elastic_search = AsyncElasticsearch()
     params = {
-        'q': 'category:' + category
+        'q': 'category:' + question
     }
     result = yield elastic_search.search(index='the-best-test', doc_type='item', params=params)
     hits = result.get('hits').get('hits')
     result = [hit.get('_source').get('answer') for hit in hits]
-    selected_answer = result[0]
+    selected_answer = result[0] if result else None
     raise gen.Return(selected_answer)
-

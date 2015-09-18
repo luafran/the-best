@@ -8,7 +8,7 @@
     <body>
         <script>
             $(function() {
-                $("#category").autocomplete({
+                $("#user_question").autocomplete({
                     source: function(request, response) {
                         var text = request.term.toLowerCase();
                         $.ajax({
@@ -29,14 +29,13 @@
                 })
             });
         </script>
-        <form action="system_question" >
+        <form action="user_question" >
             <div class="groupMenu">
-                {{ _("Tell me please the best ") }}
                 <div class="ui-widget">
-                    <input name="category" id="category">
+                    {{ _("Tell me please the best ") }} <input name="user_question" id="user_question">
                 </div>
             </div>
-            <div><input type="submit" value="{{ _("Tell me please") }}"/></div>
+            <div><input type="submit" value="{{ _("Go") }}"/></div>
         {% module xsrf_form_html() %}
         </form>
     </body>

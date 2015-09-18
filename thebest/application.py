@@ -6,9 +6,10 @@ from tornado import web
 
 from thebest.common import settings
 from thebest.common.handlers import health
+from thebest.handlers import main
 from thebest.handlers import user_question
 from thebest.handlers import system_question
-from thebest.handlers import user_answer
+from thebest.handlers import first_time
 from thebest.handlers import suggestions
 
 base_dir = os.path.dirname(__file__)
@@ -17,12 +18,14 @@ APPLICATION = web.Application(
     [
         (r'.*/health/?$', health.HealthHandler,
          {'application_settings': settings, 'handler': 'Health'}),
-        (r'.*/', user_question.UserQuestionHandler,
+        (r'.*/', main.MainHandler,
+         {'application_settings': settings, 'handler': 'Main'}, 'main'),
+        (r'.*/user_question', user_question.UserQuestionHandler,
          {'application_settings': settings, 'handler': 'UserQuestion'}, 'user_question'),
         (r'.*/system_question', system_question.SystemQuestionHandler,
          {'application_settings': settings, 'handler': 'SystemQuestion'}, 'system_question'),
-        (r'.*/user_answer', user_answer.UserAnswerHandler,
-         {'application_settings': settings, 'handler': 'UserAnswer'}, 'user_answer'),
+        (r'.*/first_time', first_time.FirstTimeHandler,
+         {'application_settings': settings, 'handler': 'SystemQuestion'}, 'first_time'),
         (r'.*/api/suggestions/question', suggestions.QuestionSuggestionsHandler,
          {'application_settings': settings, 'handler': 'CategorySuggestions'}, 'category_suggestions'),
         (r'/static/(.*)', web.StaticFileHandler,
