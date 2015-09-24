@@ -18,7 +18,8 @@ def make_and_deploy():
 
     make_packages()
     target_roles = ['application']
-    fabric.api.execute(deploy, roles=target_roles)
+    # fabric.api.execute(deploy, roles=target_roles)
+    fabric.api.execute(deploy)
 
 
 @task

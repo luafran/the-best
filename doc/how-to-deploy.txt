@@ -4,7 +4,8 @@ Traditional Way
 Deploy service from your local repository
 
 ```shell
-fab -i ~/.ssh/thebest.pem --fabfile deploy/fabfile.py dev make_and_deploy
+# fab -i ~/.ssh/thebest.pem --fabfile deploy/fabfile.py dev make_and_deploy
+fab -i ~/.ssh/thebest.pem --fabfile deploy/fabfile.py -H ubuntu@52.88.14.176 make_and_deploy
 `````
 
 Docker
