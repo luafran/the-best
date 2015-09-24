@@ -19,7 +19,7 @@
                                 response($.map(data.suggestions, function(item) {
                                     return {
                                         label: item.text,
-                                        id: item.itemId
+                                        id: item.text
                                     }
                                 }));
                             },

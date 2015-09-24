@@ -1,0 +1,30 @@
+Get suggestions to autocomplete a question
+
+GET /api/suggestions/question?text=ho
+{"suggestions": [{"text": "hotel"}, {"text": "hospital"}]}
+
+
+Get suggestions to autocomplete an answer
+
+GET /api/suggestions/answer?q=hotel&text=ho
+{"suggestions": [{"text": "Holiday Inn"}]}
+
+
+Get a question for the user to answer
+
+GET /api/user_question
+{"item": {"q": "Beach"}}
+
+Post user answer for a given question
+
+POST /api/user_answer
+{"item": {"q": "Beach", "a": "Mariscal"}}
+
+
+Get "the best" (tm) answer to a given question
+
+GET /api/best_answer?q=hotel
+{"item": {"q": "hotel", "a": "Holiday Inn"}}
+
+GET /api/best_answer?q=beer
+{"item": {"q": "beer", "a": "Imperial"}}

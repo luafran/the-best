@@ -79,105 +79,18 @@ curl -X POST 'http://localhost:9200/the-best-test/_suggest?pretty' -d '{
 
 
 --------------------------------------------
-Insert some data
+Insert an item
 
-curl -X POST 'http://localhost:9200/the-best-test/category' -d '
-{
-    "name": "car",
-    "suggest": {
-        "input": "car",
-        "output": "car",
-        "payload": {},
-        "weight": 1
-    }
-}'
-
-curl -X POST 'http://localhost:9200/the-best-test/category' -d '
-{
-    "name": "wine",
-    "suggest": {
-        "input": "wine",
-        "output": "wine",
-        "payload": {},
-        "weight": 1
-    }
-}'
-
-curl -X POST 'http://localhost:9200/the-best-test/category' -d '
-{
-    "name": "beer",
-    "suggest": {
-        "input": "beer",
-        "output": "beer",
-        "payload": {},
-        "weight": 1
-    }
-}'
-
-curl -X POST 'http://localhost:9200/the-best-test/category' -d '
-{
-    "name": "movie",
-    "suggest": {
-        "input": "movie",
-        "output": "movie",
-        "payload": {},
-        "weight": 1
-    }
-}'
-
-curl -X POST 'http://localhost:9200/the-best-test/category' -d '
-{
-    "name": "actor",
-    "suggest": {
-        "input": "actor",
-        "output": "actor",
-        "payload": {},
-        "weight": 1
-    }
-}'
-
-curl -X POST 'http://localhost:9200/the-best-test/category' -d '
-{
-    "name": "beach",
-    "suggest": {
-        "input": "beach",
-        "output": "beach",
-        "payload": {},
-        "weight": 1
-    }
-}'
-
-curl -X POST 'http://localhost:9200/the-best-test/category' -d '
-{
-    "name": "helicopter",
-    "suggest": {
-        "input": "helicopter",
-        "output": "helicopter",
-        "payload": {},
-        "weight": 1
-    }
-}'
-
-curl -X POST 'http://localhost:9200/the-best-test/category' -d '
-{
-    "name": "hotel",
-    "suggest": {
-        "input": "hotel",
-        "output": "hotel",
-        "payload": {},
-        "weight": 1
-    }
-}'
-
-curl -X POST 'http://localhost:9200/the-best-test/category' -d '
-{
-    "name": "hospital",
-    "suggest": {
-        "input": "hospital",
-        "output": "hospital",
-        "payload": {},
-        "weight": 1
-    }
+curl -XPOST 'http://localhost:9200/the-best-test/item' -d '{
+    "category" : "beer",
+    "answer": "Quilmes",
+        "suggest": {
+            "input": "beer",
+            "output": "beer",
+            "payload": {
+            },
+            "weight": 1
+        }
 }'
 
 
@@ -229,7 +142,8 @@ curl -X DELETE 'http://localhost:9200/the-best-test/_mapping/item'
 curl -X PUT localhost:9200/the-best-test/item/_mapping -d '{
   "item" : {
         "properties" : {
-            "category" : { "type" : "string" },
+            "question" : { "type" : "string" },
+            "answer" : { "type" : "string" },
             "suggest" : { "type" : "completion",
                           "index_analyzer" : "simple",
                           "search_analyzer" : "simple",
@@ -237,7 +151,7 @@ curl -X PUT localhost:9200/the-best-test/item/_mapping -d '{
             }
         }
     }
-}'
+}'; echo
 
 Query
 
@@ -254,6 +168,18 @@ curl -X POST 'http://localhost:9200/the-best-test/_suggest?pretty' -d '{
 Insert a new item
 -----------------
 
+curl -XPOST 'http://localhost:9200/the-best-test/item' -d '{
+    "category" : "beer",
+    "answer": "Quilmes",
+    "suggest": {
+        "input": "beer",
+        "output": "beer",
+        "payload": {
+        },
+        "weight": 1
+    }
+}'
+
 Currently it is a batch process
 
 curl -s -XPOST localhost:9200/_bulk --data-binary @sysconfig/elasticsearch/initial-data; echo
@@ -263,3 +189,26 @@ Get answer
 ----------
 
 curl -X GET 'http://localhost:9200/the-best-test/item/_search?q=category:hotel&pretty'
+
+
+Get item with given question and answer
+---------------------------------------
+
+curl -X GET 'http://localhost:9200/the-best-test/item/_search' -d '{
+    "query": {
+        "bool": {
+            "must": [
+                {
+                    "term": {
+                        "category": "beer"
+                    }
+                },
+                {
+                    "term": {
+                        "answer": "quilmes"
+                    }
+                }
+            ]
+        }
+    }
+}'

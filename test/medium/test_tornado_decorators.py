@@ -1,5 +1,4 @@
 import json
-import cassandra.auth
 import Crypto.PublicKey.RSA as RSA
 from six.moves import urllib_parse
 from tornado import gen

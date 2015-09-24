@@ -9,3 +9,4 @@ testscenarios>=0.4
 xmlrunner>=1.7.4
 mechanize>=0.2.5
 requests>=2.3.0
+fabric
