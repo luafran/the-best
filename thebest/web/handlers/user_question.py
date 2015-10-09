@@ -21,7 +21,7 @@ class UserQuestionHandler(base.BaseHandler):
                         system_question=item.get(api.QUESTION_TAG))
         else:
             self.support.notify_debug('First time for question: {0}'.format(user_question))
-            existing_item = yield api.item_exists(user_question)
+            existing_item = yield api.get_items_q(user_question)
             print "###### existing_item:", existing_item
             if not existing_item:
                 api.add_item(user_question, None)

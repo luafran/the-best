@@ -1,3 +1,32 @@
+Get best of something
+
+User start typing a question
+While typing system suggest questions (auto complete questions)
+	API REQUEST: GET /api/suggestions/question?text=be
+	API RESPONSE: 200 {"suggestions": [{"text": "beer"}]}
+User submit question
+    API REQUEST: GET /api/best_answer?q=beer
+    API RESPONSE:
+System search for best answer for the given question and is found
+	ALT: First time question (question does not exist) ->
+	ALT: Question already exists but there is no answer yet -> Add a want_answer_vote to this question so we ask most voted first. (?)
+System select question to be asked to the user (for example a question with no answer an max votes)
+User answer selected question
+System search for the same answer to this question and is found
+	ALT: New answer to this question -> add answer to to question item.
+System add a vote to the question/answer
+
+
+Notes:
+
+ideally we should have only one item for each (question,answer) combination
+
+
+
+
+
+
+
 Get suggestions to autocomplete a question
 
 GET /api/suggestions/question?text=ho

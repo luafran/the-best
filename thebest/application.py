@@ -7,11 +7,12 @@ from tornado import web
 from thebest.common import settings
 from thebest.common.handlers import health
 from thebest.handlers import items
-from thebest.handlers import main
-from thebest.handlers import user_question
-from thebest.handlers import system_question
-from thebest.handlers import first_time
 from thebest.handlers import suggestions
+from thebest.web.handlers import main
+from thebest.web.handlers import user_question
+from thebest.web.handlers import system_question
+from thebest.web.handlers import first_time
+
 
 base_dir = os.path.dirname(__file__)
 

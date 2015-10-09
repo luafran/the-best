@@ -130,11 +130,35 @@ curl -XPOST 'http://localhost:9200/the-best-test/item/_search?search_type=count&
 }'
 
 
+Get all items
+-------------
+
+curl -X POST 'http://localhost:9200/the-best-test/item/_search?pretty'
+
 Elasticsearch API used by the-best
 ==================================
 
 Suggest question
 ----------------
+
+Method 1:
+
+curl -X POST 'http://localhost:9200/the-best-test/item/_search' -d '{
+    "aggs": {
+        "questions": {
+            "terms": {
+                "field": "q"
+            }
+        }
+    },
+    "query": {
+        "prefix": {
+            "q": "be"
+        }
+    }
+}'
+
+Method 2 with suggestions:
 
 Setup
 
@@ -165,50 +189,74 @@ curl -X POST 'http://localhost:9200/the-best-test/_suggest?pretty' -d '{
 }'
 
 
-Insert a new item
------------------
+Get best answer
+---------------
 
-curl -XPOST 'http://localhost:9200/the-best-test/item' -d '{
-    "category" : "beer",
-    "answer": "Quilmes",
-    "suggest": {
-        "input": "beer",
-        "output": "beer",
-        "payload": {
-        },
-        "weight": 1
-    }
-}'
-
-Currently it is a batch process
-
-curl -s -XPOST localhost:9200/_bulk --data-binary @sysconfig/elasticsearch/initial-data; echo
-
-
-Get answer
-----------
-
-curl -X GET 'http://localhost:9200/the-best-test/item/_search?q=category:hotel&pretty'
-
-
-Get item with given question and answer
----------------------------------------
-
-curl -X GET 'http://localhost:9200/the-best-test/item/_search' -d '{
+curl -X POST 'http://localhost:9200/the-best-test/item/_search' -d '
+{
     "query": {
-        "bool": {
-            "must": [
-                {
-                    "term": {
-                        "category": "beer"
-                    }
-                },
-                {
-                    "term": {
-                        "answer": "quilmes"
-                    }
+        "filtered": {
+            "filter": {
+                "exists": {
+                    "field": "a"
                 }
-            ]
+            },
+            "query": {
+                "match": {
+                    "q": "beach"
+                }
+            }
         }
     }
 }'
+
+
+Search items with no answer to be presented to the user
+-------------------------------------------------------
+
+curl -X POST 'http://localhost:9200/the-best-test/item/_search' -d '{
+    "query": {
+        "filtered": {
+            "filter": {
+                "missing": {
+                    "field": "a"
+                }
+            }
+        }
+    }
+}'
+
+
+Suggest Answer
+--------------
+
+curl -X POST 'http://localhost:9200/the-best-test/item/_search' -d '{
+    "query": {
+        "prefix": {
+            "a": "bo"
+        }
+    }
+}'
+
+
+Insert a new item
+-----------------
+
+id is a uuid4 created by the app
+
+curl -X PUT 'http://localhost:9200/the-best-test/item/169c56b8-2e9d-491d-b23e-1b54e047a1c9' -d '{
+    "q": "hotel",
+    "a": null,
+    "suggest": {
+        "weight": 1,
+        "payload": {
+            "item_id": "169c56b8-2e9d-491d-b23e-1b54e047a1c9"
+        },
+        "input": "hotel",
+        "output": "hotel"
+    }
+}'
+
+Batch mode:
+
+curl -s -XPOST localhost:9200/_bulk --data-binary @sysconfig/elasticsearch/initial-data; echo

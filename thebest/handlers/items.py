@@ -10,7 +10,7 @@ class ItemsHandler(base.BaseHandler):
     def get(self):
         question = self.get_query_argument(api.QUESTION_TAG)
         answer = self.get_query_argument(api.ANSWER_TAG)
-        items = yield api.get_items(question, answer)
+        items = yield api.get_items_q_a(question, answer)
 
         response = {
             "items": items
@@ -41,7 +41,6 @@ class UserAnswerHandler(base.BaseHandler):
                                       item.get(api.ANSWER_TAG))
 
         self.build_response(response)
-
 
 
 class BestAnswerHandler(base.BaseHandler):

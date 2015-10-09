@@ -47,7 +47,7 @@ class RunService(App):  # pylint: disable=too-few-public-methods
     """
     def __init__(self):
         super(RunService, self).__init__(
-            description='Miramar services',
+            description='The best service',
             version='1.0',
             command_manager=CommandManager('thebest.services'),)
 
