@@ -9,8 +9,11 @@ class ItemsHandler(base.BaseHandler):
     @gen.coroutine
     def get(self):
         question = self.get_query_argument(api.QUESTION_TAG)
-        answer = self.get_query_argument(api.ANSWER_TAG)
-        items = yield api.get_items_q_a(question, answer)
+        answer = self.get_query_argument(api.ANSWER_TAG, None)
+        if answer:
+            items = yield api.get_items_q_a(question, answer)
+        else:
+            items = yield api.get_items_q(question)
 
         response = {
             "items": items
