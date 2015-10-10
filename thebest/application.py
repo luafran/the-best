@@ -21,10 +21,8 @@ APPLICATION = web.Application(
         # /api urls should go first
         (r'.*/health/?$', health.HealthHandler,
          {'application_settings': settings, 'handler': 'Health'}),
-        (r'.*/api/suggestions/question', suggestions.QuestionSuggestionsHandler,
+        (r'.*/api/suggestions', suggestions.SuggestionsHandler,
          {'application_settings': settings, 'handler': 'QuestionSuggestions'}, 'api_question_suggestions'),
-        (r'.*/api/suggestions/answer', suggestions.AnswerSuggestionsHandler,
-         {'application_settings': settings, 'handler': 'AnswerSuggestions'}, 'api_answer_suggestions'),
         (r'.*/api/user_question', items.UserQuestionHandler,
          {'application_settings': settings, 'handler': 'APIUserQuestion'}, 'api_user_question'),
         (r'.*/api/user_answer', items.UserAnswerHandler,

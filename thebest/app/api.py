@@ -8,6 +8,7 @@ ID_TAG = 'id'
 QUESTION_TAG = 'q'
 ANSWER_TAG = 'a'
 TEXT_TAG = 'text'
+TYPE_TAG = 'type'
 
 
 @gen.coroutine
@@ -29,11 +30,12 @@ def get_question_suggestions(text):
 
 
 @gen.coroutine
-def get_answer_suggestions(text):
+def get_answer_suggestions(question, text):
 
+    # TODO: return answers only for this question
     # TODO: Return from repository dict with text key
 
-    items = yield items_repository.get_answer_suggestions(text)
+    items = yield items_repository.get_answer_suggestions(question, text)
 
     suggestions = []
     for item in items:

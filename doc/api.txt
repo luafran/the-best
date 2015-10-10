@@ -1,41 +1,95 @@
 Get best of something
+=====================
 
-User start typing a question
-While typing system suggest questions (auto complete questions)
-	API REQUEST: GET /api/suggestions/question?text=be
+1 User start typing a question
+
+2 While typing system suggest questions (auto complete questions)
+	API REQUEST: GET /api/suggestions?type=q&text=be
 	API RESPONSE: 200 {"suggestions": [{"text": "beer"}]}
-User submit question
+
+3 User submit question
 	API REQUEST: GET /api/best_answer?q=beer
-System search for best answer for the given question and is found
-    API RESPONSE: {"item": {"q": "beer", "a": "Imperial"}}
 
-	ALT: First time question (question does not exist)
-		API RESPONSE: {"item": null}
-        (Check if there is an item for this question without answer)
-            API REQUEST: GET /api/items?q=actor
-            API RESPONSE: {"items": [{"q": "actor", "a": null, "id": "bc50aefd-f334-4250-9577-f2cf75a80980"}]}
-            API RESPONSE {"items": []}
-	ALT: Question already exists but there is no answer yet -> Add a want_answer_vote to this question so we ask most voted first. (?)
-System select question to be asked to the user (for example a question with no answer an max votes)
-    API REQUEST: /api/user_question
-    API RESPONSE: {"item": {"q": "actor"}}
-User answer selected question
-    API REQUEST:
-    API RESPONSE:
-System search for the same answer to this question and is found
-	ALT: New answer to this question -> add answer to question item.
-System add a vote to the question/answer
+4 System search for best answer for the given question and is found
+    API RESPONSE: {"items": [{"q": "beer", "a": "Imperial", "id": "1"}]}
+
+5 System display "Answer to the question"
+
+Alternatives
+------------
+
+2a ALT: There is no suggestions for the given text
+    API RESPONSE: 200 {"suggestions": []}
 
 
-Notes:
+4a	System search for best answer for the given question and no item is found (first time question)
+    API RESPONSE: {"items": []}
 
-ideally we should have only one item for each (question,answer) combination
+4a1 New question is added to the system
+    API REQUEST: POST /api/items {"item":{"q": "beer", "a": null}
+    API RESPONSE: {}
+
+4a2 System display "New question"
 
 
+4b System search for best answer for the given question and item is found with no answer
+    API RESPONSE: {"items": [{"q": "beer", "a": null}]}
+
+4b1 System display "No answer yet"
 
 
+Answer system question
+======================
+
+1 System search a question for the user to answer
+    API REQUEST: GET /api/user_question
+
+2 System select an existing question with no answer yet
+    API RESPONSE: {"items": [{"id": "1", "q": "beer", "a": null}]}
+
+3 User start typing an answer
+
+4 While typing, system suggest answers (auto complete answers)
+    API REQUEST: GET /api/suggestions?type=a&q=beer&text=imp
+	API RESPONSE: 200 {"suggestions": [{"text": "imperial"}]}
+
+5 User submit answer to a question with no answer yet
+    API REQUEST: PUT /api/items/1 {"item": {"id": "1", "q": "beer", "a": "Imperial"}}
+    API RESPONSE: {}
 
 
+Alternatives
+------------
+
+2a System select an existing question that has answer(s)
+    API RESPONSE: {"items": [{"q": "beer"}]}
+
+
+3a User select to skip system question
+
+3a1 End of use case
+
+
+4a There is no suggestions for the given text
+    API RESPONSE: 200 {"suggestions": []}
+
+
+5a User submit new answer to a question that has answer(s)
+    API REQUEST: POST /api/user_answer {"item": {"q": "beer", "a": "Heineken"}}
+    API RESPONSE: {}
+
+5a1 System create a new item {"q": "beer", "a": "Heineken"}}
+
+
+5b User submit existing answer to a question that has answer(s)
+    API REQUEST: POST /api/user_answer {"item": {"q": "beer", "a": "Imperial"}}
+    API RESPONSE: {}
+
+5b1 System add a vote to item with "q": "beer" and "a": "Imperial"
+
+
+Old Stuff
+=========
 
 Get suggestions to autocomplete a question
 

@@ -65,7 +65,7 @@ def get_question_suggestions2(text):
 
 
 @gen.coroutine
-def get_answer_suggestions(text):
+def get_answer_suggestions(question, text):
 
     elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
     body = {

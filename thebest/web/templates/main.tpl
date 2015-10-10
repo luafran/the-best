@@ -12,7 +12,7 @@
                     source: function(request, response) {
                         var text = request.term.toLowerCase();
                         $.ajax({
-                            url: "/api/suggestions/question?text=" + text,
+                            url: "/api/suggestions?type=q&text=" + text,
                             type: "GET",
                             dataType: "JSON",
                             success: function(data) {
