@@ -72,12 +72,11 @@ def get_question_for_user():
     hits = yield items_repository.get_items_without_answer()
     total = hits.get('total')
     if total == 0:
+        print "No item without answer"
         hits = yield items_repository.get_items()
     total = hits.get('total')
     result = [item.get('_source') for item in hits.get('hits')]
-    rand_index = randrange(total)
-    print 'result', result
-    print 'rand_index', rand_index
+    rand_index = randrange(total-1)
     item = {
         QUESTION_TAG: result[rand_index].get(QUESTION_TAG)
     } if result else None
