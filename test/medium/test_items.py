@@ -41,8 +41,7 @@ class TestItemsHandler(testing.AsyncHTTPTestCase):
         response_body = json.loads(response.body)
         self.assertIn('Missing argument item', response_body.get('context'))
 
-    @mock.patch('thebest.repos.items_repository.add_item')
-    def test_when_item_in_body_with_a_then_returns_400(self, mock_repo):
+    def test_when_item_in_body_with_a_then_returns_400(self):
 
         item = {
             api.ITEM_TAG: {
@@ -50,15 +49,6 @@ class TestItemsHandler(testing.AsyncHTTPTestCase):
                 api.ANSWER_TAG: 'imperial'
             }
         }
-
-        response_from_repo = {
-            'created': True,
-            items_repository.ID_TAG: '123'
-        }
-
-        future = Future()
-        future.set_result(response_from_repo)
-        mock_repo.return_value = future
 
         request = HTTPRequest(
             self.get_url('/api/items'),
