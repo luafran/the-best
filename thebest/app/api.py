@@ -69,26 +69,44 @@ def get_best_answer(question):
 
 @gen.coroutine
 def get_question_for_user():
+    items = []
+    include_id = True
     hits = yield items_repository.get_items_without_answer()
-    total = hits.get('total')
+    total = hits.get(items_repository.TOTAL_TAG)
     if total == 0:
         print "No item without answer"
+        # TODO: This is returning just one page, we have to change that so we get the total and choose a random item
+        # TODO: from the database directly, not from the hits array returned in this query
         hits = yield items_repository.get_items()
-    total = hits.get('total')
-    result = [item.get('_source') for item in hits.get('hits')]
-    rand_index = randrange(total-1)
-    item = {
-        QUESTION_TAG: result[rand_index].get(QUESTION_TAG)
-    } if result else None
+        include_id = False
+    total = hits.get(items_repository.TOTAL_TAG)
+    hits = hits.get(items_repository.HITS_TAG)
+    print 'total:', total
+    print 'hits:', hits
 
-    raise gen.Return(item)
+    if total > 0:
+        rand_index = randrange(len(hits))
+        print 'rand_index:', rand_index
+        item_for_user = hits[rand_index]
+        item = {
+            QUESTION_TAG: item_for_user.get(items_repository.SOURCE_TAG).get(items_repository.QUESTION_TAG)
+        }
+
+        if include_id and item_for_user.get(items_repository.ID_TAG):
+            item[ID_TAG] = item_for_user.get(items_repository.ID_TAG)
+
+        items.append(item)
+    else:
+        items = []
+
+    raise gen.Return(items)
 
 
 @gen.coroutine
 def get_items_q_a(question, answer):
     hits = yield items_repository.get_items_q_a(question.lower(), answer.lower())
     hits = hits.get(items_repository.HITS_TAG)
-    result = [hit.get('_source') for hit in hits]
+    result = [hit.get(items_repository.SOURCE_TAG) for hit in hits]
 
     raise gen.Return(result)
 
@@ -97,7 +115,7 @@ def get_items_q_a(question, answer):
 def get_items_q(question):
     result_list = []
     hits = yield items_repository.get_items_q(question.lower())
-    hits = hits.get('hits')
+    hits = hits.get(items_repository.HITS_TAG)
 
     for hit in hits:
         source = hit.get(items_repository.SOURCE_TAG)
@@ -116,7 +134,7 @@ def get_items_q(question):
 def add_item(question, answer):
     result = yield items_repository.add_item(question, answer)
 
-    if result.get('created'):
+    if result.get(items_repository.CREATED_TAG):
         item = {
             ITEM_TAG: {
                 ID_TAG: result.get(items_repository.ID_TAG),

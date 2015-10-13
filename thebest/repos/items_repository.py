@@ -4,7 +4,9 @@ from tornado_elasticsearch import AsyncElasticsearch
 
 ID_TAG = '_id'
 HITS_TAG = 'hits'
+TOTAL_TAG = 'total'
 SOURCE_TAG = '_source'
+CREATED_TAG = 'created'
 QUESTION_TAG = 'q'
 ANSWER_TAG = 'a'
 TEXT_TAG = 'text'
