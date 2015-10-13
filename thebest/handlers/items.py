@@ -26,12 +26,13 @@ class ItemsHandler(base.BaseHandler):
     def post(self):
         item = self.request.body_arguments.get(api.ITEM_TAG)
         if not item:
-            self.build_response(exceptions.MissingArgumentValue(
-                'Missing argument {0}'.format(api.ITEM_TAG)))
-            return
-        response = yield api.add_item(item.get(api.QUESTION_TAG),
-                                      item.get(api.ANSWER_TAG))
+            response = exceptions.MissingArgumentValue('Missing argument {0}'.format(api.ITEM_TAG))
+        elif item.get(api.ANSWER_TAG):
+            response = exceptions.InvalidArgument('Item "{0}" field should be null'.format(api.ANSWER_TAG))
+        else:
+            response = yield api.add_item(item.get(api.QUESTION_TAG), None)
 
         if not response:
             response = exceptions.DatabaseOperationError("Item not inserted")
+
         self.build_response(response)
