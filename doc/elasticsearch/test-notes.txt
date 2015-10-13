@@ -230,7 +230,7 @@ curl -X POST 'http://localhost:9200/the-best-test/item/_search' -d '{
 Suggest Answer
 --------------
 
-curl -X POST 'http://localhost:9200/the-best-test/item/_search' -d '{
+curl -X POST 'http://localhost:9200/the-best-test/item/_search?pretty' -d '{
     "query": {
         "prefix": {
             "a": "bo"

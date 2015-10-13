@@ -1,6 +1,7 @@
 from tornado import gen
 
 from thebest.app import api
+from thebest.common import exceptions
 from thebest.common.handlers import base
 
 
@@ -21,40 +22,16 @@ class ItemsHandler(base.BaseHandler):
 
         self.build_response(response)
 
-
-class UserQuestionHandler(base.BaseHandler):
-
-    @gen.coroutine
-    def get(self):
-        question = yield api.get_question_for_user()
-
-        response = {
-            "item": question
-        }
-
-        self.build_response(response)
-
-
-class UserAnswerHandler(base.BaseHandler):
-
     @gen.coroutine
     def post(self):
-        item = self.request.body_arguments.get('item')
+        item = self.request.body_arguments.get(api.ITEM_TAG)
+        if not item:
+            self.build_response(exceptions.MissingArgumentValue(
+                'Missing argument {0}'.format(api.ITEM_TAG)))
+            return
         response = yield api.add_item(item.get(api.QUESTION_TAG),
                                       item.get(api.ANSWER_TAG))
 
-        self.build_response(response)
-
-
-class BestAnswerHandler(base.BaseHandler):
-
-    @gen.coroutine
-    def get(self):
-        question = self.get_query_argument(api.QUESTION_TAG)
-        answer = yield api.get_best_answer(question)
-
-        response = {
-            "item": answer
-        }
-
+        if not response:
+            response = exceptions.DatabaseOperationError("Item not inserted")
         self.build_response(response)

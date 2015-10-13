@@ -5,6 +5,8 @@ from thebest.repos import items_repository
 # These are the names used externally against clients
 # Do not confuse with names used internally in our repository
 ID_TAG = 'id'
+ITEM_TAG = 'item'
+ITEMS_TAG = 'items'
 QUESTION_TAG = 'q'
 ANSWER_TAG = 'a'
 TEXT_TAG = 'text'
@@ -52,14 +54,17 @@ def get_answer_suggestions(question, text):
 def get_best_answer(question):
     hits = yield items_repository.get_best_answer(question)
     hits = hits.get(items_repository.HITS_TAG)
-    result = [hit.get(items_repository.SOURCE_TAG) for hit in hits]
 
-    item = {
-        QUESTION_TAG: result[0].get(QUESTION_TAG),
-        ANSWER_TAG: result[0].get(ANSWER_TAG)
-    } if result else None
+    items = []
+    for hit in hits:
+        source = hit.get(items_repository.SOURCE_TAG)
+        item = {
+            QUESTION_TAG: source.get(QUESTION_TAG),
+            ANSWER_TAG: source.get(ANSWER_TAG)
+        }
+        items.append(item)
 
-    raise gen.Return(item)
+    raise gen.Return(items)
 
 
 @gen.coroutine
@@ -111,6 +116,20 @@ def get_items_q(question):
 @gen.coroutine
 def add_item(question, answer):
     result = yield items_repository.add_item(question, answer)
+
+    if result.get('created'):
+        item = {
+            ITEM_TAG: {
+                ID_TAG: result.get(items_repository.ID_TAG),
+                QUESTION_TAG: question,
+                ANSWER_TAG: answer
+            }
+        }
+
+        result = item
+    else:
+        result = None
+
     raise gen.Return(result)
 
 

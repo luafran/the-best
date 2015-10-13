@@ -6,8 +6,11 @@ from tornado import web
 
 from thebest.common import settings
 from thebest.common.handlers import health
+from thebest.handlers import best_answer
 from thebest.handlers import items
 from thebest.handlers import suggestions
+from thebest.handlers import user_answer
+from thebest.handlers import user_question
 from thebest.web.handlers import main
 from thebest.web.handlers import user_question
 from thebest.web.handlers import system_question
@@ -23,11 +26,11 @@ APPLICATION = web.Application(
          {'application_settings': settings, 'handler': 'Health'}),
         (r'.*/api/suggestions', suggestions.SuggestionsHandler,
          {'application_settings': settings, 'handler': 'QuestionSuggestions'}, 'api_question_suggestions'),
-        (r'.*/api/user_question', items.UserQuestionHandler,
+        (r'.*/api/user_question', user_question.UserQuestionHandler,
          {'application_settings': settings, 'handler': 'APIUserQuestion'}, 'api_user_question'),
-        (r'.*/api/user_answer', items.UserAnswerHandler,
+        (r'.*/api/user_answer', user_answer.UserAnswerHandler,
          {'application_settings': settings, 'handler': 'APIUserAnswer'}, 'api_user_answer'),
-        (r'.*/api/best_answer', items.BestAnswerHandler,
+        (r'.*/api/best_answer', best_answer.BestAnswerHandler,
          {'application_settings': settings, 'handler': 'APIBestAnswer'}, 'api_best_answer'),
         (r'.*/api/items', items.ItemsHandler,
          {'application_settings': settings, 'handler': 'Items'}, 'items'),

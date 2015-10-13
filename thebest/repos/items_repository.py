@@ -209,9 +209,11 @@ def add_item(question, answer):
         }
     }
 
-    elastic_search.create(index='the-best-test', doc_type='item', id=item_id, body=body)
+    # Two yields? yes!
+    result = yield elastic_search.create(index='the-best-test', doc_type='item', id=item_id, body=body)
+    result = yield result
 
-    raise gen.Return(None)
+    raise gen.Return(result)
 
 
 @gen.coroutine
