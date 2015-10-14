@@ -66,7 +66,7 @@ class TestUserQuestionHandler(testing.AsyncHTTPTestCase):
 
         self.assertEqual(expected_body, json.loads(response.body))
 
-    @mock.patch('thebest.repos.items_repository.get_items')
+    @mock.patch('thebest.repos.items_repository.get_all_items')
     @mock.patch('thebest.repos.items_repository.get_items_without_answer')
     def test_when_there_are_not_items_without_answer_then_another_is_returned(self, mock_repo1, mock_repo2):
 
@@ -114,7 +114,7 @@ class TestUserQuestionHandler(testing.AsyncHTTPTestCase):
         }
         self.assertEqual(expected_body, json.loads(response.body))
 
-    @mock.patch('thebest.repos.items_repository.get_items')
+    @mock.patch('thebest.repos.items_repository.get_all_items')
     @mock.patch('thebest.repos.items_repository.get_items_without_answer')
     def test_when_there_are_no_item_in_database_then_nothing_is_returned(self, mock_repo1, mock_repo2):
 

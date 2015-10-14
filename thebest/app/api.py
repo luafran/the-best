@@ -1,5 +1,6 @@
 from random import randrange
 from tornado import gen
+from thebest.common import exceptions
 from thebest.repos import items_repository
 
 # These are the names used externally against clients
@@ -16,7 +17,7 @@ TYPE_TAG = 'type'
 @gen.coroutine
 def get_question_suggestions(text):
 
-    # TODO: Return from repository dict with text key
+    # ToDo: Return from repository dict with text key
 
     items = yield items_repository.get_question_suggestions(text)
 
@@ -34,8 +35,8 @@ def get_question_suggestions(text):
 @gen.coroutine
 def get_answer_suggestions(question, text):
 
-    # TODO: return answers only for this question
-    # TODO: Return from repository dict with text key
+    # ToDo: return answers only for this question
+    # ToDo: Return from repository dict with text key
 
     items = yield items_repository.get_answer_suggestions(question, text)
 
@@ -52,7 +53,7 @@ def get_answer_suggestions(question, text):
 
 @gen.coroutine
 def get_best_answer(question):
-    hits = yield items_repository.get_best_answer(question)
+    hits = yield items_repository.get_items_with_answer_to_q(question)
     hits = hits.get(items_repository.HITS_TAG)
 
     items = []
@@ -75,9 +76,9 @@ def get_question_for_user():
     total = hits.get(items_repository.TOTAL_TAG)
     if total == 0:
         print "No item without answer"
-        # TODO: This is returning just one page, we have to change that so we get the total and choose a random item
-        # TODO: from the database directly, not from the hits array returned in this query
-        hits = yield items_repository.get_items()
+        # ToDo: This is returning just one page, we have to change that so we get the total and choose
+        # ToDo: a random item from the database directly, not from the hits array returned in this query
+        hits = yield items_repository.get_all_items()
         include_id = False
     total = hits.get(items_repository.TOTAL_TAG)
     hits = hits.get(items_repository.HITS_TAG)
@@ -103,8 +104,27 @@ def get_question_for_user():
 
 
 @gen.coroutine
+def process_user_answer(question, answer):
+    items_with_same_answer = yield get_items_q_a(question, answer)
+    print "items_with_same_answer: {0}".format(items_with_same_answer)
+    if items_with_same_answer:
+        print "Item already exists for question: {0} and answer: {1}".format(question, answer)
+        # ToDo: Check that we have only one item with same answer. What to do in case we have more?
+        # ToDo: Add a vote to this item
+        response = None
+    else:
+        # It should not happen that we have an item with this question and no answer since
+        # in that case clients should update the answer using PUT to /items/:id
+        print "Adding new item for question: {0} and answer: {1}".format(question, answer)
+        response = yield add_item(question, answer)
+
+    # ToDo: Check what should we return here
+    raise gen.Return(response)
+
+
+@gen.coroutine
 def get_items_q_a(question, answer):
-    hits = yield items_repository.get_items_q_a(question.lower(), answer.lower())
+    hits = yield items_repository.get_items_with_q_and_a(question.lower(), answer.lower())
     hits = hits.get(items_repository.HITS_TAG)
     result = [hit.get(items_repository.SOURCE_TAG) for hit in hits]
 
@@ -114,7 +134,7 @@ def get_items_q_a(question, answer):
 @gen.coroutine
 def get_items_q(question):
     result_list = []
-    hits = yield items_repository.get_items_q(question.lower())
+    hits = yield items_repository.get_items_with_question(question.lower())
     hits = hits.get(items_repository.HITS_TAG)
 
     for hit in hits:
@@ -152,6 +172,15 @@ def add_item(question, answer):
 
 @gen.coroutine
 def update_item_answer(item_id, answer):
-    # TODO: convert external item to internal item
-    result = yield items_repository.update_item_answer(item_id, answer)
+    try:
+        hit = yield items_repository.get_item(item_id)
+        item = hit.get(items_repository.SOURCE_TAG)
+        item[items_repository.ANSWER_TAG] = answer
+        result = yield items_repository.update_item(item_id, item)
+        result = None
+    except exceptions.NotFound as ex:
+        result = ex
+    except exceptions.DatabaseOperationError as ex:
+        result = ex
+
     raise gen.Return(result)

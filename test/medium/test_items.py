@@ -149,3 +149,48 @@ class TestItemsHandler(testing.AsyncHTTPTestCase):
         self.assertEqual(expected_body, response_body)
 
         mock_repo.assert_called_with(item[api.ITEM_TAG][api.QUESTION_TAG], None)
+
+    @mock.patch('thebest.repos.items_repository.update_item')
+    @mock.patch('thebest.repos.items_repository.get_item')
+    def test_update_existing_item(self, mock_repo1, mock_repo2):
+
+        response_from_get_item = {
+            items_repository.SOURCE_TAG: {
+                api.QUESTION_TAG: 'beer'
+            }
+        }
+        future = Future()
+        future.set_result(response_from_get_item)
+        mock_repo1.return_value = future
+
+        item = {
+            api.ITEM_TAG: {
+                api.QUESTION_TAG: 'beer',
+                api.ANSWER_TAG: 'patagonia'
+            }
+        }
+
+        item_id = '123'
+        response_from_repo = {
+            'created': True,
+            items_repository.ID_TAG: item_id
+        }
+
+        future = Future()
+        future.set_result(response_from_repo)
+        mock_repo2.return_value = future
+
+        request = HTTPRequest(
+            self.get_url('/api/items/' + item_id),
+            method='PUT',
+            headers=self._headers,
+            body=json.dumps(item)
+        )
+        self.http_client.fetch(request, self.stop)
+        response = self.wait()
+
+        self.assertEqual(response.code, 204)
+
+        self.assertEqual('', response.body)
+
+        mock_repo2.assert_called_with(item_id, item[api.ITEM_TAG])

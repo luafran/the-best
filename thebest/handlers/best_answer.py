@@ -11,14 +11,12 @@ class BestAnswerHandler(base.BaseHandler):
     def get(self):
         question = self.get_query_argument(api.QUESTION_TAG, None)
         if not question:
-            self.build_response(exceptions.MissingArgumentValue(
-                'Missing argument {0}'.format(api.QUESTION_TAG)))
-            return
+            response = exceptions.MissingArgumentValue('Missing argument {0}'.format(api.QUESTION_TAG))
+        else:
+            items = yield api.get_best_answer(question)
 
-        items = yield api.get_best_answer(question)
-
-        response = {
-            "items": items
-        }
+            response = {
+                "items": items
+            }
 
         self.build_response(response)

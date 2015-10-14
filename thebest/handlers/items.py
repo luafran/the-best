@@ -5,10 +5,11 @@ from thebest.common import exceptions
 from thebest.common.handlers import base
 
 
+# pylint: disable=arguments-differ
 class ItemsHandler(base.BaseHandler):
 
     @gen.coroutine
-    def get(self):
+    def get(self, item_id):  # pylint: disable=unused-argument
         question = self.get_query_argument(api.QUESTION_TAG)
         answer = self.get_query_argument(api.ANSWER_TAG, None)
         if answer:
@@ -23,7 +24,7 @@ class ItemsHandler(base.BaseHandler):
         self.build_response(response)
 
     @gen.coroutine
-    def post(self):
+    def post(self, item_id):  # pylint: disable=unused-argument
         item = self.request.body_arguments.get(api.ITEM_TAG)
         if not item:
             response = exceptions.MissingArgumentValue('Missing argument {0}'.format(api.ITEM_TAG))
@@ -34,5 +35,15 @@ class ItemsHandler(base.BaseHandler):
 
         if not response:
             response = exceptions.DatabaseOperationError("Item not inserted")
+
+        self.build_response(response)
+
+    @gen.coroutine
+    def put(self, item_id):
+        item = self.request.body_arguments.get(api.ITEM_TAG)
+        if not item:
+            response = exceptions.MissingArgumentValue('Missing argument {0}'.format(api.ITEM_TAG))
+        else:
+            response = yield api.update_item_answer(item_id, item.get(api.ANSWER_TAG))
 
         self.build_response(response)
