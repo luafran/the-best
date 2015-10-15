@@ -1,3 +1,4 @@
+from itertools import groupby
 import uuid
 from tornado import gen
 from tornado_elasticsearch import AsyncElasticsearch
@@ -19,7 +20,7 @@ ELASTIC_SEARCH_ENDPOINT = '52.88.14.176'
 
 
 @gen.coroutine
-def get_question_suggestions(text):
+def get_question_suggestions2(text):
     elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
 
     params = {
@@ -51,20 +52,25 @@ def get_question_suggestions(text):
 
 
 @gen.coroutine
-def get_question_suggestions2(text):
+def get_question_suggestions(text):
     elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
     body = {
-        'item-suggest': {
-            TEXT_TAG: text,
-            'completion': {
-                'field': 'suggest'
+        'query': {
+            'prefix': {
+                QUESTION_TAG: text.lower()
             }
         }
     }
 
-    result = yield elastic_search.suggest(index='the-best-test', body=body)
-    options = result.get('item-suggest')[0].get('options')
-    result = [option.get(TEXT_TAG) for option in options]
+    try:
+        result = yield elastic_search.search(index='the-best-test', doc_type='item', body=body)
+        hits = result.get(HITS_TAG).get(HITS_TAG)
+        result = [hit.get(SOURCE_TAG).get(QUESTION_TAG)
+                  for hit in sorted(hits, key=lambda x: x.get(SOURCE_TAG).get(QUESTION_TAG))]
+        # Remove duplicates
+        result = [key for key, group in groupby(result, lambda x: x)]
+    except elasticsearch.exceptions.ElasticsearchException as ex:
+        raise exceptions.DatabaseOperationError('{0}'.format(ex.message))
 
     raise gen.Return(result)
 

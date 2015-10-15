@@ -18,18 +18,17 @@ TYPE_TAG = 'type'
 def get_question_suggestions(text):
 
     # ToDo: Return from repository dict with text key
-
     items = yield items_repository.get_question_suggestions(text)
 
-    suggestions = []
+    result = []
     for item in items:
         suggestion = {
             TEXT_TAG: item
         }
 
-        suggestions.append(suggestion)
+        result.append(suggestion)
 
-    raise gen.Return(suggestions)
+    raise gen.Return(result)
 
 
 @gen.coroutine
@@ -37,18 +36,20 @@ def get_answer_suggestions(question, text):
 
     # ToDo: return answers only for this question
     # ToDo: Return from repository dict with text key
+    try:
+        items = yield items_repository.get_answer_suggestions(question, text)
 
-    items = yield items_repository.get_answer_suggestions(question, text)
+        result = []
+        for item in items:
+            suggestion = {
+                TEXT_TAG: item
+            }
 
-    suggestions = []
-    for item in items:
-        suggestion = {
-            TEXT_TAG: item
-        }
+            result.append(suggestion)
+    except exceptions.DatabaseOperationError as ex:
+        raise ex
 
-        suggestions.append(suggestion)
-
-    raise gen.Return(suggestions)
+    raise gen.Return(result)
 
 
 @gen.coroutine

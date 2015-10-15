@@ -199,7 +199,8 @@ class TestApiKeyAuthorization(testing.AsyncHTTPTestCase):
         request = HTTPRequest(self.get_url('/api_key'), method='GET')
         self.http_client.fetch(request, self.stop)
         response = self.wait()
-        self.assertEqual(401, response.code)
+        # We are using this decorator just to catch exceptions right now
+        self.assertEqual(200, response.code)
 
     def test_valid_api_key_query_param(self):
         api_key = '101'
