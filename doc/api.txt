@@ -12,7 +12,7 @@ Response:
 
 
 Repository:
-get_question_suggestion(text="cor"):
+get_question_suggestions(text="cor"):
 	[{"text": "cortadora de ceped"}, {"text": "corte de asado"}] | [] | InfoException
 
 
@@ -27,7 +27,7 @@ Response:
 
 
 Repository:
-get_answer_suggestion(q="city", text="cor"):
+get_answer_suggestions(q="city", text="cor"):
 	[{"text": "cordoba"}, {"text": "corrientes"}] | [] | InfoException
 
 
