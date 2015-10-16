@@ -1,123 +1,112 @@
-Get best of something
-=====================
+API Client - Backend - Repository
+=================================
 
-1 User start typing a question
+Get question suggestions
+------------------------
 
-2 While typing system suggest questions (auto complete questions)
-	API REQUEST: GET /api/suggestions?type=q&text=be
-	API RESPONSE: 200 {"suggestions": [{"text": "beer"}]}
+GET /suggestions?type=q&text=cor
 
-3 User submit question
-	API REQUEST: GET /api/best_answer?q=beer
-
-4 System search for best answer for the given question and is found
-    API RESPONSE: {"items": [{"q": "beer", "a": "Imperial", "id": "1"}]}
-
-5 System display "Answer to the question"
-
-Alternatives
-------------
-
-2a ALT: There is no suggestions for the given text
-    API RESPONSE: 200 {"suggestions": []}
+Response:
+200: {"suggestions": [{"text": "cortadora de ceped"}, {"text": "corte de asado"}]}
+200: {"suggestions": []}
 
 
-4a	System search for best answer for the given question and no item is found (first time question)
-    API RESPONSE: {"items": []}
-
-4a1 New question is added to the system
-    API REQUEST: POST /api/items {"item":{"q": "beer", "a": null}
-    API RESPONSE: {}
-
-4a2 System display "New question"
+Repository:
+get_question_suggestion(text="cor"):
+	[{"text": "cortadora de ceped"}, {"text": "corte de asado"}] | [] | InfoException
 
 
-4b System search for best answer for the given question and item is found with no answer
-    API RESPONSE: {"items": [{"q": "beer", "a": null}]}
+Get answer suggestions for a given question
+-------------------------------------------
 
-4b1 System display "No answer yet"
+GET /suggestions?type=a&q=city&text=cor
 
-
-Answer system question
-======================
-
-1 System search a question for the user to answer
-    API REQUEST: GET /api/user_question
-
-2 System select an existing question with no answer yet
-    API RESPONSE: {"items": [{"id": "1", "q": "beer", "a": null}]}
-
-3 User start typing an answer
-
-4 While typing, system suggest answers (auto complete answers)
-    API REQUEST: GET /api/suggestions?type=a&q=beer&text=imp
-	API RESPONSE: 200 {"suggestions": [{"text": "imperial"}]}
-
-5 User submit answer to a question with no answer yet
-    API REQUEST: PUT /api/items/1 {"item": {"id": "1", "q": "beer", "a": "Imperial"}}
-    API RESPONSE: {}
+Response:
+200: {"suggestions": [{"text": "cordoba"}]}
+200: {"suggestions": []}
 
 
-Alternatives
-------------
-
-2a System select an existing question that has answer(s)
-    API RESPONSE: {"items": [{"q": "beer"}]}
+Repository:
+get_answer_suggestion(q="city", text="cor"):
+	[{"text": "cordoba"}, {"text": "corrientes"}] | [] | InfoException
 
 
-3a User select to skip system question
+Get the best (r) answer to a given question
+-------------------------------------------
 
-3a1 End of use case
+GET /best_answer?q=question
 
-
-4a There is no suggestions for the given text
-    API RESPONSE: 200 {"suggestions": []}
-
-
-5a User submit new answer to a question that has answer(s)
-    API REQUEST: POST /api/user_answer {"item": {"q": "beer", "a": "Heineken"}}
-    API RESPONSE: {}
-
-5a1 System create a new item {"q": "beer", "a": "Heineken"}}
+Response:
+200: {"a": "best_answer"}
+200: null -> no answer yet
 
 
-5b User submit existing answer to a question that has answer(s)
-    API REQUEST: POST /api/user_answer {"item": {"q": "beer", "a": "Imperial"}}
-    API RESPONSE: {}
-
-5b1 System add a vote to item with "q": "beer" and "a": "Imperial"
+Repository:
+get_best_answers(q="question"):
+	[{"a", "best_answer"}, {"a": "another_answer"}] | [] | InfoException
 
 
-Old Stuff
-=========
+Add new question (used when best_answer is null)
+------------------------------------------------
 
-Get suggestions to autocomplete a question
+POST /question
 
-GET /api/suggestions/question?text=ho
-{"suggestions": [{"text": "hotel"}, {"text": "hospital"}]}
+Request body:
+{"q": "new_question"}
 
-
-Get suggestions to autocomplete an answer
-
-GET /api/suggestions/answer?q=hotel&text=ho
-{"suggestions": [{"text": "Holiday Inn"}]}
+Response:
+201: null
 
 
-Get a question for the user to answer
+Repository:
+insert_question(q="new_question"):
+	None | InfoException
 
-GET /api/user_question
-{"item": {"q": "Beach"}}
+
+Get question for the user to answer
+-----------------------------------
+
+GET /system_question
+
+Response:
+200: {"q": "system_question"}
+200: null -> no question for the user to answer
+
+
+Repository:
+get_user_questions():
+	[{"q": "system_question1"}, {"q": "another_system_question"}] | [] | InfoException
+
 
 Post user answer for a given question
+-------------------------------------
 
-POST /api/user_answer
-{"item": {"q": "Beach", "a": "Mariscal"}}
+POST /user_answer
+
+Request body:
+{"q": "system_question", "a": "user_answer"}
+
+Response:
+201: null
 
 
-Get "the best" (tm) answer to a given question
+Repository:
+insert_answer(q="system_question", a="user_answer"):
+	None | InfoException
 
-GET /api/best_answer?q=hotel
-{"item": {"q": "hotel", "a": "Holiday Inn"}}
 
-GET /api/best_answer?q=beer
-{"item": {"q": "beer", "a": "Imperial"}}
+Vote a given answer
+-------------------
+
+POST /vote
+
+Request body:
+{"q": "question", "a": "answer"}
+
+Response:
+201: null
+
+
+Repository:
+vote_answer(q="system_question", a="user_answer"):
+	None | InfoException
