@@ -25,6 +25,14 @@ JSON_SCHEMA_BASE_URL = "http://thebest/jsonschema/"
 
 DATE_TIME_FORMAT = '%Y-%m-%dT%H:%M:%SZ'
 
+MYSQL_MAX_CONNECTIONS = 20
+MYSQL_IDLE_SECONDS = 7200
+MYSQL_HOST = "127.0.0.1"
+MYSQL_USER = "root"
+MYSQL_PASSWD = "password"
+MYSQL_DB = "thebest"
+MYSQL_CHARSET = "utf8"
+
 LOG_DIR = os.path.expanduser("~")
 LOG_LEVEL = 'DEBUG'
 LOGGER_NAME = 'service'

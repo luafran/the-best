@@ -13,41 +13,47 @@ TEXT_TAG = 'text'
 TYPE_TAG = 'type'
 
 
-@gen.coroutine
-def get_question_suggestions(text):
+class Application(object):
 
-    # TODO: Return from repository dict with text key
+    def __init__(self, repository):
+        self.items_repository = repository
 
-    items = yield items_repository.get_question_suggestions(text)
+    @gen.coroutine
+    def get_question_suggestions(self, text):
 
-    suggestions = []
-    for item in items:
-        suggestion = {
-            TEXT_TAG: item
-        }
+        # TODO: Return from repository dict with text key
 
-        suggestions.append(suggestion)
+        items = yield self.items_repository.get_question_suggestions(text)
 
-    raise gen.Return(suggestions)
+        suggestions = []
+        for item in items:
+            suggestion = {
+
+                TEXT_TAG: item
+            }
+
+            suggestions.append(suggestion)
+
+        raise gen.Return(suggestions)
 
 
-@gen.coroutine
-def get_answer_suggestions(question, text):
+    @gen.coroutine
+    def get_answer_suggestions(self, question, text):
 
-    # TODO: return answers only for this question
-    # TODO: Return from repository dict with text key
+        # TODO: return answers only for this question
+        # TODO: Return from repository dict with text key
 
-    items = yield items_repository.get_answer_suggestions(question, text)
+        items = yield self.items_repository.get_answer_suggestions(question, text)
 
-    suggestions = []
-    for item in items:
-        suggestion = {
-            TEXT_TAG: item
-        }
+        suggestions = []
+        for item in items:
+            suggestion = {
+                TEXT_TAG: item
+            }
 
-        suggestions.append(suggestion)
+            suggestions.append(suggestion)
 
-    raise gen.Return(suggestions)
+        raise gen.Return(suggestions)
 
 
 @gen.coroutine

@@ -15,9 +15,12 @@ from thebest.web.handlers import main
 from thebest.web.handlers import user_question
 from thebest.web.handlers import system_question
 from thebest.web.handlers import first_time
-
+from thebest.repos.mysql import items_repository
 
 base_dir = os.path.dirname(__file__)
+
+items_repository = items_repository.TheBestRepository()
+settings.items_repository = items_repository
 
 APPLICATION = web.Application(
     [

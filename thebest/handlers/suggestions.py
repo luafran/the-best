@@ -21,15 +21,16 @@ class SuggestionsHandler(base.BaseHandler):
             self.build_response(exceptions.MissingArgumentValue(
                 'Missing argument {0}'.format(api.TEXT_TAG)))
 
+        app = api.Application(self.application_settings.items_repository)
         if suggestion_type == api.QUESTION_TAG:
-            items = yield api.get_question_suggestions(text)
+            items = yield app.get_question_suggestions(text)
         elif suggestion_type == api.ANSWER_TAG:
             question = self.get_query_argument(api.QUESTION_TAG, None)
             if not question:
                 self.build_response(exceptions.MissingArgumentValue(
                     'Missing argument {0}'.format(api.QUESTION_TAG)))
                 return
-            items = yield api.get_answer_suggestions(question, text)
+            items = yield app.get_answer_suggestions(question, text)
         else:
             self.build_response(exceptions.InvalidArgumentValue(
                 'Invalid value {0} for argument {1}'.format(suggestion_type, api.TYPE_TAG)))
