@@ -1,8 +1,9 @@
 use thebest;
 
-drop table if exists questions;
-drop table if exists answers;
 drop table if exists actions;
+drop table if exists answers;
+drop table if exists questions;
+drop table if exists action_types;
 
 create table if not exists questions
 (
@@ -26,17 +27,34 @@ create table if not exists answers
 
 ) engine=MyISAM;
 
+create table if not exists action_types
+(
+    type		char(10)	not null,
+
+    constraint pk_action_types primary key (type)
+) engine=MyISAM;
+
+insert into action_types values('VOTE');
+insert into action_types values('AGREE');
+insert into action_types values('DESAGREE');
+insert into action_types values('ASK');
+
 create table if not exists actions
 (
-    id			int			not null auto_increment,
-	question_id	char(40)	not null,
-	answer_id 	char(40)	not null,
+    id					int			not null auto_increment,
+    
+	question_id			char(40)	null,
+    
+	answer_question_id	char(40)	null,
+	answer_id 			char(40)	null,
 
-    type		ENUM('VOTE', 'AGREE', 'DESAGREE') default 'VOTE',
-    ts 			timestamp 	default current_timestamp on update current_timestamp,
+    type				char(10)	not null,
+    ts 					timestamp 	default current_timestamp on update current_timestamp,
 
     constraint pk_actions primary key (id),
-    constraint fk_actions__answers__answer_id foreign key (question_id, answer_id) references answers(question_id, id)
+    constraint fk_actions__types__type foreign key (type) references action_types(type),
+    constraint fk_actions__question__question_id foreign key (question_id) references questions(question_id),
+    constraint fk_actions__answers__answer_id foreign key (answer_question_id, answer_id) references answers(question_id, id)
 ) engine=MyISAM;
 
 create index idx_actions__question on actions(question_id);
@@ -54,33 +72,33 @@ insert into questions(id, question) values(sha1('carniceria'), 'carniceria');
 insert into questions(id, question) values(sha1('panaderia'), 'panaderia');
 
 insert into answers(question_id, id, answer) values(sha1('auto para trabajar'), sha1('volkswagen gol'), 'volkswagen gol');
-insert into actions(question_id, answer_id, type) values(sha1('auto para trabajar'), sha1('peugeot 206'), 'VOTE');
-insert into actions(question_id, answer_id, type) values(sha1('auto para trabajar'), sha1('peugeot 206'), 'VOTE');
-insert into actions(question_id, answer_id, type) values(sha1('auto para trabajar'), sha1('peugeot 206'), 'DISAGREE');
-insert into actions(question_id, answer_id, type) values(sha1('auto para trabajar'), sha1('peugeot 206'), 'DISAGREE');
-insert into actions(question_id, answer_id, type) values(sha1('auto para trabajar'), sha1('peugeot 206'), 'AGREE');
+insert into actions(answer_question_id, answer_id, type) values(sha1('auto para trabajar'), sha1('peugeot 206'), 'VOTE');
+insert into actions(answer_question_id, answer_id, type) values(sha1('auto para trabajar'), sha1('peugeot 206'), 'VOTE');
+insert into actions(answer_question_id, answer_id, type) values(sha1('auto para trabajar'), sha1('peugeot 206'), 'DISAGREE');
+insert into actions(answer_question_id, answer_id, type) values(sha1('auto para trabajar'), sha1('peugeot 206'), 'DISAGREE');
+insert into actions(answer_question_id, answer_id, type) values(sha1('auto para trabajar'), sha1('peugeot 206'), 'AGREE');
 
 insert into answers(question_id, id, answer) values(sha1('auto para trabajar'), sha1('fiat uno'), 'fiat uno');
-insert into actions(question_id, answer_id, type) values(sha1('auto para trabajar'), sha1('fiat uno'), 'VOTE');
+insert into actions(answer_question_id, answer_id, type) values(sha1('auto para trabajar'), sha1('fiat uno'), 'VOTE');
 
 insert into answers(question_id, id, answer) values(sha1('auto para trabajar'), sha1('chevrolet corsa'), 'chevrolet corsa');
-insert into actions(question_id, answer_id, type) values(sha1('auto para trabajar'), sha1('chevrolet corsa'), 'VOTE');
+insert into actions(answer_question_id, answer_id, type) values(sha1('auto para trabajar'), sha1('chevrolet corsa'), 'VOTE');
 
 insert into answers(question_id, id, answer) values(sha1('auto para trabajar'), sha1('ford k'), 'ford k');
-insert into actions(question_id, answer_id, type) values(sha1('auto para trabajar'), sha1('ford k'), 'VOTE');
+insert into actions(answer_question_id, answer_id, type) values(sha1('auto para trabajar'), sha1('ford k'), 'VOTE');
 
 insert into answers(question_id, id, answer) values(sha1('auto para trabajar'), sha1('peugeot 206'), 'peugeot 206');
-insert into actions(question_id, answer_id, type) values(sha1('auto para trabajar'), sha1('peugeot 206'), 'VOTE');
+insert into actions(answer_question_id, answer_id, type) values(sha1('auto para trabajar'), sha1('peugeot 206'), 'VOTE');
 
 insert into answers(question_id, id, answer) values(sha1('restaurante para comer pastas'), sha1('la pirola'), 'la pirola');
-insert into actions(question_id, answer_id, type) values(sha1('restaurante para comer pastas'), sha1('la pirola'), 'VOTE');
+insert into actions(answer_question_id, answer_id, type) values(sha1('restaurante para comer pastas'), sha1('la pirola'), 'VOTE');
 insert into answers(question_id, id, answer) values(sha1('restaurante para comer pastas'), sha1('Mamma Mía'), 'Mamma Mía');
-insert into actions(question_id, answer_id, type) values(sha1('restaurante para comer pastas'), sha1('Mamma Mía'), 'VOTE');
+insert into actions(answer_question_id, answer_id, type) values(sha1('restaurante para comer pastas'), sha1('Mamma Mía'), 'VOTE');
 
 insert into answers(question_id, id, answer) values(sha1('lugar para comprar pastas'), sha1('polidori'), 'polidori');
-insert into actions(question_id, answer_id, type) values(sha1('lugar para comprar pastas'), sha1('polidori'), 'VOTE');
+insert into actions(answer_question_id, answer_id, type) values(sha1('lugar para comprar pastas'), sha1('polidori'), 'VOTE');
 insert into answers(question_id, id, answer) values(sha1('lugar para comprar pastas'), sha1('san cayetano'), 'san cayetano');
-insert into actions(question_id, answer_id, type) values(sha1('lugar para comprar pastas'), sha1('san cayetano'), 'VOTE');
+insert into actions(answer_question_id, answer_id, type) values(sha1('lugar para comprar pastas'), sha1('san cayetano'), 'VOTE');
 
 /* Some queries */
 
