@@ -7,7 +7,7 @@ from thebest.common import exceptions
 import collections
 
 
-RULE_TUPLE = namedtuple('Rule', ['execute', 'args', 'default'])
+RuleTuple = namedtuple('Rule', ['execute', 'args', 'default'])
 
 
 def Rule(args, execute=None, default=None):                             # pylint: disable=C0103
@@ -18,7 +18,7 @@ def Rule(args, execute=None, default=None):                             # pylint
     @param default value used when the attribute defined by path is not in the resource
     """
 
-    return RULE_TUPLE(execute, args, default)
+    return RuleTuple(execute, args, default)
 
 
 def normalize_resources(resources, normalization_rules, is_ordered=False):

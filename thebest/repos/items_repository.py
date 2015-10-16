@@ -1,10 +1,16 @@
+from itertools import groupby
 import uuid
 from tornado import gen
 from tornado_elasticsearch import AsyncElasticsearch
+import elasticsearch.exceptions
+
+from thebest.common import exceptions
 
 ID_TAG = '_id'
 HITS_TAG = 'hits'
+TOTAL_TAG = 'total'
 SOURCE_TAG = '_source'
+CREATED_TAG = 'created'
 QUESTION_TAG = 'q'
 ANSWER_TAG = 'a'
 TEXT_TAG = 'text'
@@ -14,7 +20,7 @@ ELASTIC_SEARCH_ENDPOINT = '52.88.14.176'
 
 
 @gen.coroutine
-def get_question_suggestions(text):
+def get_question_suggestions2(text):
     elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
 
     params = {
@@ -46,26 +52,31 @@ def get_question_suggestions(text):
 
 
 @gen.coroutine
-def get_question_suggestions2(text):
+def get_question_suggestions(text):
     elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
     body = {
-        'item-suggest': {
-            TEXT_TAG: text,
-            'completion': {
-                'field': 'suggest'
+        'query': {
+            'prefix': {
+                QUESTION_TAG: text.lower()
             }
         }
     }
 
-    result = yield elastic_search.suggest(index='the-best-test', body=body)
-    options = result.get('item-suggest')[0].get('options')
-    result = [option.get(TEXT_TAG) for option in options]
+    try:
+        result = yield elastic_search.search(index='the-best-test', doc_type='item', body=body)
+        hits = result.get(HITS_TAG).get(HITS_TAG)
+        result = [hit.get(SOURCE_TAG).get(QUESTION_TAG)
+                  for hit in sorted(hits, key=lambda x: x.get(SOURCE_TAG).get(QUESTION_TAG))]
+        # Remove duplicates
+        result = [key for key, group in groupby(result, lambda x: x)]
+    except elasticsearch.exceptions.ElasticsearchException as ex:
+        raise exceptions.DatabaseOperationError('{0}'.format(ex.message))
 
     raise gen.Return(result)
 
 
 @gen.coroutine
-def get_answer_suggestions(question, text):
+def get_answer_suggestions(question, text):  # pylint: disable=unused-argument
 
     elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
     body = {
@@ -109,7 +120,7 @@ def get_items_without_answer():
 
 
 @gen.coroutine
-def get_best_answer(question):
+def get_items_with_answer_to_q(question):
     elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
 
     query = {
@@ -137,7 +148,7 @@ def get_best_answer(question):
 
 
 @gen.coroutine
-def get_items_q_a(question, answer):
+def get_items_with_q_and_a(question, answer):
     elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
 
     query = {
@@ -167,7 +178,7 @@ def get_items_q_a(question, answer):
 
 
 @gen.coroutine
-def get_items_q(question):
+def get_items_with_question(question):
     elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
 
     params = {
@@ -182,7 +193,21 @@ def get_items_q(question):
 
 
 @gen.coroutine
-def get_items():
+def get_item(item_id):
+    elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
+
+    try:
+        item = yield elastic_search.get(index='the-best-test', doc_type='item', id=item_id)
+    except elasticsearch.exceptions.NotFoundError:
+        raise exceptions.NotFound('item id {0}'.format(item_id))
+    except elasticsearch.exceptions.ElasticsearchException as ex:
+        raise exceptions.DatabaseOperationError('ex: {0}'.format(ex.message))
+
+    raise gen.Return(item)
+
+
+@gen.coroutine
+def get_all_items():
     elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
 
     result = yield elastic_search.search(index='the-best-test',
@@ -217,10 +242,13 @@ def add_item(question, answer):
 
 
 @gen.coroutine
-def update_item_answer(item_id, answer):
+def update_item(item_id, item):
     elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
 
-    item = yield elastic_search.get(index='the-best-test', doc_type='item', id=item_id)
-    item[SOURCE_TAG][ANSWER_TAG] = answer
-
-    elastic_search.index(index='the-best-test', doc_type='item', id=item_id, body=item[SOURCE_TAG])
+    try:
+        result = yield elastic_search.index(index='the-best-test', doc_type='item', id=item_id, body=item)
+        raise gen.Return(result)
+    except elasticsearch.exceptions.NotFoundError:
+        raise gen.Return(exceptions.NotFound('item id {0}'.format(item_id)))
+    except elasticsearch.exceptions.ElasticsearchException as ex:
+        raise gen.Return(exceptions.DatabaseOperationError('ex: {0}'.format(ex.message)))

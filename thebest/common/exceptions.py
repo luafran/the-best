@@ -18,7 +18,7 @@ class InfoException(Exception):
     Do not use this exception directly.
     """
 
-    def __init__(self, info):                           # pylint: disable=E1002
+    def __init__(self, info):
         self.info = info
         super(InfoException, self).__init__(self.info[CONTEXT_KEY])
 
@@ -39,7 +39,7 @@ class GeneralInfoException(InfoException):
     It may be used to translate a standard python exception into an info exception.
     """
 
-    def __init__(self, context):      # pylint: disable=E1002
+    def __init__(self, context):
         self.info = dict()
         self.info[DEVELOPER_MESSAGE_KEY] = 'Exception occurred'
         self.info[USER_MESSAGE_KEY] = 'Service error'
@@ -56,7 +56,7 @@ class BadRequestBase(InfoException):
     Do not use this exception directly.
     """
 
-    def __init__(self, info):                           # pylint: disable=E1002
+    def __init__(self, info):
         super(BadRequestBase, self).__init__(info)
 
 
@@ -66,7 +66,7 @@ class BadRequest(BadRequestBase):
     context should include argument name for all offending arguments.
     """
 
-    def __init__(self, context):      # pylint: disable=E1002
+    def __init__(self, context):
         self.info = dict()
         self.info[DEVELOPER_MESSAGE_KEY] = 'An invalid request was provided'
         self.info[USER_MESSAGE_KEY] = 'An invalid request was provided'
@@ -81,7 +81,7 @@ class Conflict(InfoException):
     context should include argument name for all offending arguments.
     """
 
-    def __init__(self, context):      # pylint: disable=E1002
+    def __init__(self, context):
         self.info = dict()
         self.info[DEVELOPER_MESSAGE_KEY] = 'An invalid request was provided'
         self.info[USER_MESSAGE_KEY] = 'An invalid request was provided'
@@ -96,7 +96,7 @@ class InvalidArgument(BadRequestBase):
     context should include argument name for all offending arguments.
     """
 
-    def __init__(self, context):      # pylint: disable=E1002
+    def __init__(self, context):
         self.info = dict()
         self.info[DEVELOPER_MESSAGE_KEY] = 'An invalid argument was provided'
         self.info[USER_MESSAGE_KEY] = 'An invalid argument was provided'
@@ -111,7 +111,7 @@ class MissingArgumentValue(BadRequestBase):
     context should include argument name for all offending arguments.
     """
 
-    def __init__(self, context):      # pylint: disable=E1002
+    def __init__(self, context):
         self.info = dict()
         self.info[DEVELOPER_MESSAGE_KEY] = 'No value provided for an argument with required value'
         self.info[USER_MESSAGE_KEY] = 'No value provided for an argument with required value'
@@ -126,7 +126,7 @@ class InvalidArgumentValue(BadRequestBase):
     context should include argument name, actual value and allowed values for all offending arguments.
     """
 
-    def __init__(self, context):      # pylint: disable=E1002
+    def __init__(self, context):
         self.info = dict()
         self.info[DEVELOPER_MESSAGE_KEY] = 'A valid argument was provided with an invalid value'
         self.info[USER_MESSAGE_KEY] = 'A valid argument was provided with an invalid value'
@@ -142,7 +142,7 @@ class ForbiddenBase(InfoException):
     Do not use this exception directly.
     """
 
-    def __init__(self, info):                           # pylint: disable=E1002
+    def __init__(self, info):
         super(ForbiddenBase, self).__init__(info)
 
 
@@ -154,7 +154,7 @@ class Forbidden(ForbiddenBase):
     Use only when is not defined if the resource was tried to be read, written or executed.
     """
 
-    def __init__(self, context):      # pylint: disable=E1002
+    def __init__(self, context):
         info = dict()
         info[DEVELOPER_MESSAGE_KEY] = 'Forbidden to access requested resource'
         info[USER_MESSAGE_KEY] = 'Forbidden to access requested resource'
@@ -170,7 +170,7 @@ class UnauthorizedBase(InfoException):
     Do not use this exception directly.
     """
 
-    def __init__(self, info):                           # pylint: disable=E1002
+    def __init__(self, info):
         super(UnauthorizedBase, self).__init__(info)
 
 
@@ -182,7 +182,7 @@ class Unauthorized(UnauthorizedBase):
     Use only when is not defined if the resource was tried to be read, written or executed.
     """
 
-    def __init__(self, context):      # pylint: disable=E1002
+    def __init__(self, context):
         info = dict()
         info[DEVELOPER_MESSAGE_KEY] = 'Unauthorized to access requested resource'
         info[USER_MESSAGE_KEY] = 'Unauthorized to access requested resource'
@@ -197,7 +197,7 @@ class UnauthorizedRead(UnauthorizedBase):
     do not include required permissions.
     """
 
-    def __init__(self, context):      # pylint: disable=E1002
+    def __init__(self, context):
         info = dict()
         info[DEVELOPER_MESSAGE_KEY] = 'Unauthorized to read requested resource'
         info[USER_MESSAGE_KEY] = 'Unauthorized to read requested resource'
@@ -212,7 +212,7 @@ class UnauthorizedWrite(UnauthorizedBase):
     do not include required permissions.
     """
 
-    def __init__(self, context):      # pylint: disable=E1002
+    def __init__(self, context):
         info = dict()
         info[DEVELOPER_MESSAGE_KEY] = 'Unauthorized to write requested resource'
         info[USER_MESSAGE_KEY] = 'Unauthorized to write requested resource'
@@ -227,7 +227,7 @@ class UnauthorizedExecute(UnauthorizedBase):
     do not include required permissions.
     """
 
-    def __init__(self, context):      # pylint: disable=E1002
+    def __init__(self, context):
         info = dict()
         info[DEVELOPER_MESSAGE_KEY] = 'Unauthorized to execute requested resource'
         info[USER_MESSAGE_KEY] = 'Unauthorized to execute requested resource'
@@ -244,7 +244,7 @@ class NotFoundBase(InfoException):
     Do not use this exception directly.
     """
 
-    def __init__(self, info):                           # pylint: disable=E1002
+    def __init__(self, info):
         super(NotFoundBase, self).__init__(info)
 
 
@@ -255,7 +255,7 @@ class NotFound(NotFoundBase):
     Context should include the resource that was not found, use ids or absolute paths whenever possible.
     """
 
-    def __init__(self, context):      # pylint: disable=E1002
+    def __init__(self, context):
         info = dict()
         info[DEVELOPER_MESSAGE_KEY] = 'Resource not found'
         info[USER_MESSAGE_KEY] = 'Resource not found'
@@ -271,7 +271,7 @@ class MethodNotAllowedBase(InfoException):
     Do not use this exception directly.
     """
 
-    def __init__(self, info):                           # pylint: disable=E1002
+    def __init__(self, info):
         super(MethodNotAllowedBase, self).__init__(info)
 
 
@@ -282,7 +282,7 @@ class MethodNotAllowed(MethodNotAllowedBase):
     Context should include the resource that was not found, use ids or absolute paths whenever possible.
     """
 
-    def __init__(self, context):      # pylint: disable=E1002
+    def __init__(self, context):
         info = dict()
         info[DEVELOPER_MESSAGE_KEY] = 'Method not allowed'
         info[USER_MESSAGE_KEY] = 'Method not allowed'
@@ -299,7 +299,7 @@ class PermanentServiceError(InfoException):
     Do not use this exception directly.
     """
 
-    def __init__(self, info):                           # pylint: disable=E1002
+    def __init__(self, info):
         super(PermanentServiceError, self).__init__(info)
 
 
@@ -311,7 +311,7 @@ class TemporaryServiceError(InfoException):
     Do not use this exception directly.
     """
 
-    def __init__(self, info):                           # pylint: disable=E1002
+    def __init__(self, info):
         super(TemporaryServiceError, self).__init__(info)
 
 
@@ -320,7 +320,7 @@ class CouldNotConnectToDatabase(TemporaryServiceError):
     Provider used in the request timed out or returned an error
     """
 
-    def __init__(self, context):      # pylint: disable=E1002
+    def __init__(self, context):
         self.info = dict()
         self.info[DEVELOPER_MESSAGE_KEY] = 'Could not connect to database'
         self.info[USER_MESSAGE_KEY] = 'Could not connect to database'
@@ -335,7 +335,7 @@ class DatabaseOperationError(TemporaryServiceError):
     Context should include the operation that failed.
     """
 
-    def __init__(self, context):      # pylint: disable=E1002
+    def __init__(self, context):
         self.info = dict()
         self.info[DEVELOPER_MESSAGE_KEY] = 'Error while trying to read/write database'
         self.info[USER_MESSAGE_KEY] = 'Error while trying to read/write database'
@@ -350,7 +350,7 @@ class ExternalProviderUnavailablePermanently(PermanentServiceError):
     Context should include the operation that failed.
     """
 
-    def __init__(self, context):      # pylint: disable=E1002
+    def __init__(self, context):
         self.info = dict()
         self.info[DEVELOPER_MESSAGE_KEY] = 'An external provider is unavailable permanently'
         self.info[USER_MESSAGE_KEY] = 'An external provider is unavailable permanently'
@@ -365,7 +365,7 @@ class ExternalProviderUnavailableTemporarily(TemporaryServiceError):
     Context should include the operation that failed.
     """
 
-    def __init__(self, context):      # pylint: disable=E1002
+    def __init__(self, context):
         self.info = dict()
         self.info[DEVELOPER_MESSAGE_KEY] = 'An external provider is unavailable temporarily'
         self.info[USER_MESSAGE_KEY] = 'An external provider is unavailable temporarily'
@@ -380,7 +380,7 @@ class ExternalProviderBadResponse(PermanentServiceError):
     Context should include the operation that failed.
     """
 
-    def __init__(self, context):      # pylint: disable=E1002
+    def __init__(self, context):
         self.info = dict()
         self.info[DEVELOPER_MESSAGE_KEY] = "The external provider's response is not valid"
         self.info[USER_MESSAGE_KEY] = "The external provider's response is not valid"

@@ -55,7 +55,6 @@ class Application(object):
 
         raise gen.Return(suggestions)
 
-
 @gen.coroutine
 def get_best_answer(question):
     hits = yield items_repository.get_best_answer(question)

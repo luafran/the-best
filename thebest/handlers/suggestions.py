@@ -3,10 +3,12 @@ from tornado import gen
 from thebest.app import api
 from thebest.common import exceptions
 from thebest.common.handlers import base
+from thebest.common.handlers import decorators
 
 
 class SuggestionsHandler(base.BaseHandler):
 
+    @decorators.api_key_authorization
     @gen.coroutine
     def get(self):
 

@@ -35,7 +35,7 @@ class TestBestAnswerHandler(testing.AsyncHTTPTestCase):
         response_body = json.loads(response.body)
         self.assertIn('Missing argument q', response_body.get('context'))
 
-    @mock.patch('thebest.repos.items_repository.get_best_answer')
+    @mock.patch('thebest.repos.items_repository.get_items_with_answer_to_q')
     def test_when_no_hits_then_returns_empty_list(self, mock_repo):
 
         future = Future()
@@ -55,7 +55,7 @@ class TestBestAnswerHandler(testing.AsyncHTTPTestCase):
         }
         self.assertEqual(expected_body, json.loads(response.body))
 
-    @mock.patch('thebest.repos.items_repository.get_best_answer')
+    @mock.patch('thebest.repos.items_repository.get_items_with_answer_to_q')
     def test_when_hit_then_returns_list(self, mock_repo):
 
         future = Future()

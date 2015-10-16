@@ -95,7 +95,7 @@ class TestSuggestionsHandler(testing.AsyncHTTPTestCase):
     def test_when_question_suggestion_and_3_items_return_list(self, mock_repo):
 
         future = Future()
-        future.set_result(['beer', 'beach', 'beacon'])
+        future.set_result(['beer', 'beach', 'beacon', 'corte de asado'])
         mock_repo.return_value = future
 
         request = HTTPRequest(
@@ -110,7 +110,8 @@ class TestSuggestionsHandler(testing.AsyncHTTPTestCase):
             'suggestions': [
                 {'text': 'beer'},
                 {'text': 'beach'},
-                {'text': 'beacon'}
+                {'text': 'beacon'},
+                {'text': 'corte de asado'}
             ]
         }
         self.assertEqual(expected_body, json.loads(response.body))

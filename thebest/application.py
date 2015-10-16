@@ -17,7 +17,7 @@ from thebest.web.handlers import system_question
 from thebest.web.handlers import first_time
 from thebest.repos.mysql import items_repository
 
-base_dir = os.path.dirname(__file__)
+BASE_DIR = os.path.dirname(__file__)
 
 items_repository = items_repository.TheBestRepository()
 settings.items_repository = items_repository
@@ -35,7 +35,7 @@ APPLICATION = web.Application(
          {'application_settings': settings, 'handler': 'APIUserAnswer'}, 'api_user_answer'),
         (r'.*/api/best_answer', best_answer.BestAnswerHandler,
          {'application_settings': settings, 'handler': 'APIBestAnswer'}, 'api_best_answer'),
-        (r'.*/api/items', items.ItemsHandler,
+        (r'.*/api/items/?(.*)$', items.ItemsHandler,
          {'application_settings': settings, 'handler': 'Items'}, 'items'),
         (r'.*/', main.MainHandler,
          {'application_settings': settings, 'handler': 'Main'}, 'main'),
@@ -46,8 +46,8 @@ APPLICATION = web.Application(
         (r'.*/first_time', first_time.FirstTimeHandler,
          {'application_settings': settings, 'handler': 'FirstTime'}, 'first_time'),
         (r'/static/(.*)', web.StaticFileHandler,
-         {'path': os.path.join(base_dir, "web", "static")}),
+         {'path': os.path.join(BASE_DIR, "web", "static")}),
     ],
     service_name='the-best',
-    template_path=os.path.join(base_dir, "web", "templates"),
+    template_path=os.path.join(BASE_DIR, "web", "templates"),
     autoreload=settings.AUTO_RELOAD)

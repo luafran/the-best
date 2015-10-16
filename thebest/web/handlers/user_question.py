@@ -10,8 +10,6 @@ class UserQuestionHandler(base.BaseHandler):
     def get(self):
         user_question = self.get_query_argument('user_question').lower()
 
-        # TODO: We may have an item with no answer.
-        # So there is no best answer but we don't have to add the item again
         system_answer = yield api.get_best_answer(user_question)
         self.support.notify_debug('system_answer: {0}'.format(system_answer))
         if system_answer:
