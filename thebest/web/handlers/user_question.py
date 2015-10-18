@@ -22,5 +22,5 @@ class UserQuestionHandler(base.BaseHandler):
             existing_item = yield api.get_items_q(user_question)
             print "###### existing_item:", existing_item
             if not existing_item:
-                api.add_item(user_question, None)
+                api.add_question(user_question, None)
             self.render('first_time_question.tpl', user_question=user_question)

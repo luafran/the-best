@@ -227,13 +227,12 @@ def get_all_items():
 
 
 @gen.coroutine
-def add_item(question, answer):
+def add_question(question):
     elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
 
     item_id = str(uuid.uuid4())
     body = {
         QUESTION_TAG: question,
-        ANSWER_TAG: answer,
         'suggest': {
             'input': question,
             'output': question,

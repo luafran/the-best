@@ -7,7 +7,7 @@ from tornado import web
 from thebest.common import settings
 from thebest.common.handlers import health
 from thebest.handlers import best_answer
-from thebest.handlers import items
+from thebest.handlers import question
 from thebest.handlers import suggestions
 from thebest.handlers import user_answer
 from thebest.handlers import user_question as api_user_question
@@ -28,15 +28,16 @@ APPLICATION = web.Application(
         (r'.*/health/?$', health.HealthHandler,
          {'application_settings': settings, 'handler': 'Health'}),
         (r'.*/api/suggestions', suggestions.SuggestionsHandler,
-         {'application_settings': settings, 'handler': 'QuestionSuggestions'}, 'api_question_suggestions'),
+         {'application_settings': settings, 'handler': 'QuestionSuggestions'}, 'api_suggestions'),
+        (r'.*/api/best_answer', best_answer.BestAnswerHandler,
+         {'application_settings': settings, 'handler': 'APIBestAnswer'}, 'api_best_answer'),
+        (r'.*/api/question/?$', question.QuestionHandler,
+         {'application_settings': settings, 'handler': 'APIQuestion'}, 'api_question'),
+
         (r'.*/api/user_question', api_user_question.UserQuestionHandler,
          {'application_settings': settings, 'handler': 'APIUserQuestion'}, 'api_user_question'),
         (r'.*/api/user_answer', user_answer.UserAnswerHandler,
          {'application_settings': settings, 'handler': 'APIUserAnswer'}, 'api_user_answer'),
-        (r'.*/api/best_answer', best_answer.BestAnswerHandler,
-         {'application_settings': settings, 'handler': 'APIBestAnswer'}, 'api_best_answer'),
-        (r'.*/api/items/?(.*)$', items.ItemsHandler,
-         {'application_settings': settings, 'handler': 'Items'}, 'items'),
         (r'.*/', main.MainHandler,
          {'application_settings': settings, 'handler': 'Main'}, 'main'),
         (r'.*/user_question', user_question.UserQuestionHandler,

@@ -59,7 +59,7 @@ Response:
 
 
 Repository:
-insert_question(q="new_question"):
+add_question(q="new_question"):
 	None | InfoException
 
 

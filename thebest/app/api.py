@@ -60,6 +60,11 @@ class Application(object):
 
         raise gen.Return(items[0])
 
+    @gen.coroutine
+    def add_question(self, question):
+        yield items_repository.add_question(question)
+        raise gen.Return(None)
+
 
 @gen.coroutine
 def get_question_for_user():
@@ -104,26 +109,6 @@ def get_items_q(question):
         result_list.append(result_item)
 
     raise gen.Return(result_list)
-
-
-@gen.coroutine
-def add_item(question, answer):
-    result = yield items_repository.add_item(question, answer)
-
-    if result.get('created'):
-        item = {
-            ITEM_TAG: {
-                ID_TAG: result.get(items_repository.ID_TAG),
-                QUESTION_TAG: question,
-                ANSWER_TAG: answer
-            }
-        }
-
-        result = item
-    else:
-        result = None
-
-    raise gen.Return(result)
 
 
 @gen.coroutine
