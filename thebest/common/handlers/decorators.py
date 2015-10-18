@@ -90,10 +90,11 @@ def api_key_authorization(func=None, api_key_name='client_id', render_response=F
         @functools.wraps(func)
         def wrapper(self, *args, **kwargs):
             try:
-                # api_key_str = self.get_argument(api_key_name, default=False)
-                #
-                # if not api_key_str:
-                #     raise exceptions.Unauthorized('Missing api_key')
+                api_key_str = self.get_argument(api_key_name, default=False)
+
+                if not api_key_str:
+                    pass
+                    # raise exceptions.Unauthorized('Missing api_key')
 
                 # subscription_config_repo = SubscriptionConfigRepository(
                 #     self.support,

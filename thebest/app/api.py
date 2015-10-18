@@ -21,7 +21,7 @@ class Application(object):
     @gen.coroutine
     def get_question_suggestions(self, text):
 
-        # TODO: Return from repository dict with text key
+        # ToDo: Return from repository dict with text key
 
         items = yield self.items_repository.get_question_suggestions(text)
 
@@ -36,12 +36,11 @@ class Application(object):
 
         raise gen.Return(suggestions)
 
-
     @gen.coroutine
     def get_answer_suggestions(self, question, text):
 
-        # TODO: return answers only for this question
-        # TODO: Return from repository dict with text key
+        # ToDo: return answers only for this question
+        # ToDo: Return from repository dict with text key
 
         items = yield self.items_repository.get_answer_suggestions(question, text)
 
@@ -55,21 +54,20 @@ class Application(object):
 
         raise gen.Return(suggestions)
 
-@gen.coroutine
-def get_best_answer(question):
-    hits = yield items_repository.get_best_answer(question)
-    hits = hits.get(items_repository.HITS_TAG)
+    @gen.coroutine
+    def get_best_answer(self, question):
+        hits = yield items_repository.get_best_answers(question)
+        hits = hits.get(items_repository.HITS_TAG)
 
-    items = []
-    for hit in hits:
-        source = hit.get(items_repository.SOURCE_TAG)
-        item = {
-            QUESTION_TAG: source.get(QUESTION_TAG),
-            ANSWER_TAG: source.get(ANSWER_TAG)
-        }
-        items.append(item)
+        items = []
+        for hit in hits:
+            source = hit.get(items_repository.SOURCE_TAG)
+            item = {
+                ANSWER_TAG: source.get(ANSWER_TAG)
+            }
+            items.append(item)
 
-    raise gen.Return(items)
+        raise gen.Return(items[0])
 
 
 @gen.coroutine
@@ -139,6 +137,6 @@ def add_item(question, answer):
 
 @gen.coroutine
 def update_item_answer(item_id, answer):
-    # TODO: convert external item to internal item
+    # ToDo: convert external item to internal item
     result = yield items_repository.update_item_answer(item_id, answer)
     raise gen.Return(result)

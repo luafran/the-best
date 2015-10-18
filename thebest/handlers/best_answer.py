@@ -15,10 +15,7 @@ class BestAnswerHandler(base.BaseHandler):
         if not question:
             response = exceptions.MissingArgumentValue('Missing argument {0}'.format(api.QUESTION_TAG))
         else:
-            items = yield api.get_best_answer(question)
-
-            response = {
-                "items": items
-            }
+            app = api.Application(self.application_settings.items_repository)
+            response = yield app.get_best_answer(question)
 
         self.build_response(response)

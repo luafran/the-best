@@ -68,7 +68,7 @@ def get_question_suggestions(text):
         result = [hit.get(SOURCE_TAG).get(QUESTION_TAG)
                   for hit in sorted(hits, key=lambda x: x.get(SOURCE_TAG).get(QUESTION_TAG))]
         # Remove duplicates
-        result = [key for key, group in groupby(result, lambda x: x)]
+        result = [key for key, _ in groupby(result, lambda x: x)]
     except elasticsearch.exceptions.ElasticsearchException as ex:
         raise exceptions.DatabaseOperationError('{0}'.format(ex.message))
 
@@ -120,7 +120,7 @@ def get_items_without_answer():
 
 
 @gen.coroutine
-def get_items_with_answer_to_q(question):
+def get_best_answers(question):
     elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
 
     query = {
