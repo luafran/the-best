@@ -10,7 +10,7 @@ from thebest.handlers import best_answer
 from thebest.handlers import question
 from thebest.handlers import suggestions
 from thebest.handlers import user_answer
-from thebest.handlers import user_question as api_user_question
+from thebest.handlers import system_question as api_system_question
 from thebest.web.handlers import main
 from thebest.web.handlers import user_question
 from thebest.web.handlers import system_question
@@ -33,9 +33,8 @@ APPLICATION = web.Application(
          {'application_settings': settings, 'handler': 'APIBestAnswer'}, 'api_best_answer'),
         (r'.*/api/question/?$', question.QuestionHandler,
          {'application_settings': settings, 'handler': 'APIQuestion'}, 'api_question'),
-
-        (r'.*/api/user_question', api_user_question.UserQuestionHandler,
-         {'application_settings': settings, 'handler': 'APIUserQuestion'}, 'api_user_question'),
+        (r'.*/api/system_question', api_system_question.SystemQuestionHandler,
+         {'application_settings': settings, 'handler': 'APISystemQuestion'}, 'api_system_question'),
         (r'.*/api/user_answer', user_answer.UserAnswerHandler,
          {'application_settings': settings, 'handler': 'APIUserAnswer'}, 'api_user_answer'),
         (r'.*/', main.MainHandler,

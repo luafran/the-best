@@ -74,7 +74,7 @@ Response:
 
 
 Repository:
-get_user_questions():
+get_system_questions():
 	[{"q": "system_question1"}, {"q": "another_system_question"}] | [] | InfoException
 
 

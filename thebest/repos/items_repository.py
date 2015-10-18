@@ -96,7 +96,7 @@ def get_answer_suggestions(question, text):  # pylint: disable=unused-argument
 
 
 @gen.coroutine
-def get_items_without_answer():
+def get_system_questions():
     elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
 
     query = {
@@ -115,8 +115,18 @@ def get_items_without_answer():
 
     result = yield elastic_search.search(index='the-best-test', doc_type='item', body=body)
     hits = result.get(HITS_TAG)
+    total = hits.get('total')
+    if total == 0:
+        print "No item without answer"
+        hits = yield get_all_items()
 
-    raise gen.Return(hits)
+    items = []
+    for hit in hits.get('hits'):
+        question = hit.get('_source').get(QUESTION_TAG)
+        item = {QUESTION_TAG: question}
+        items.append(item)
+
+    raise gen.Return(items)
 
 
 @gen.coroutine

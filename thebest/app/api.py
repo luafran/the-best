@@ -67,18 +67,11 @@ class Application(object):
 
 
 @gen.coroutine
-def get_question_for_user():
-    hits = yield items_repository.get_items_without_answer()
-    total = hits.get('total')
-    if total == 0:
-        print "No item without answer"
-        hits = yield items_repository.get_items()
-    total = hits.get('total')
-    result = [item.get('_source') for item in hits.get('hits')]
+def get_system_question():
+    items = yield items_repository.get_system_questions()
+    total = len(items)
     rand_index = randrange(total-1)
-    item = {
-        QUESTION_TAG: result[rand_index].get(QUESTION_TAG)
-    } if result else None
+    item = items[rand_index] if items else None
 
     raise gen.Return(item)
 

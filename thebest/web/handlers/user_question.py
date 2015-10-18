@@ -13,7 +13,7 @@ class UserQuestionHandler(base.BaseHandler):
         system_answer = yield api.get_best_answer(user_question)
         self.support.notify_debug('system_answer: {0}'.format(system_answer))
         if system_answer:
-            item = yield api.get_question_for_user()
+            item = yield api.get_system_question()
             self.render('system_question.tpl',
                         user_question=user_question,
                         system_question=item.get(api.QUESTION_TAG))
