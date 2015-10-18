@@ -144,7 +144,17 @@ def get_best_answers(question):
 
     result = yield elastic_search.search(index='the-best-test', doc_type='item', body=body)
     hits = result.get(HITS_TAG)
-    raise gen.Return(hits)
+    hits = hits.get(HITS_TAG)
+
+    items = []
+    for hit in hits:
+        source = hit.get(SOURCE_TAG)
+        item = {
+            ANSWER_TAG: source.get(ANSWER_TAG)
+        }
+        items.append(item)
+
+    raise gen.Return(items)
 
 
 @gen.coroutine

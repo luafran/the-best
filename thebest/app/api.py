@@ -56,16 +56,7 @@ class Application(object):
 
     @gen.coroutine
     def get_best_answer(self, question):
-        hits = yield items_repository.get_best_answers(question)
-        hits = hits.get(items_repository.HITS_TAG)
-
-        items = []
-        for hit in hits:
-            source = hit.get(items_repository.SOURCE_TAG)
-            item = {
-                ANSWER_TAG: source.get(ANSWER_TAG)
-            }
-            items.append(item)
+        items = yield items_repository.get_best_answers(question)
 
         raise gen.Return(items[0])
 
