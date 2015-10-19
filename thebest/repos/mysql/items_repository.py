@@ -92,7 +92,7 @@ class TheBestRepository(object):
                                 "          FROM actions ac " \
                                 "         WHERE ac.answer_question_id = q.id) as votes" \
                                 "  FROM questions q " \
-                                "       JOIN answers a " \
+                                "       LEFT OUTER JOIN answers a " \
                                 "         ON a.question_id = q.id " \
                                 " WHERE q.id = sha1('{0}') " \
                                 " ORDER BY votes DESC "\
