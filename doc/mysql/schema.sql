@@ -140,19 +140,19 @@ select q.id, q.question, count(*), max(a.ts)
 		on q.id = a.question_id
 group by q.id, q.question
 
-select id,
-	   question,
+
+select q.id as question_id,
+	   a.id as answer_id,
+	   a.answer,
 	   (select count(*)
-		  from answers a
-		 where a.answer_question_id = q.id) as answers,
-	   (select count(*)
-		  from actions a
-		 where a.answer_question_id = q.id) as votes,
-	   (select max(ts)
-		  from actions a
-		 where a.answer_question_id = q.id) as last_vote
- from questions q
-order by votes, last_vote
+		  from actions ac
+		 where ac.answer_question_id = q.id) as votes
+ from questions q 
+	join answers a
+      on a.question_id = q.id
+order by votes desc
+
+
 
 select sha1(question), question
   from questions
