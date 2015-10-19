@@ -23,17 +23,7 @@ class Application(object):
 
         # ToDo: Return from repository dict with text key
 
-        items = yield self.items_repository.get_question_suggestions(text)
-
-        suggestions = []
-        for item in items:
-            suggestion = {
-
-                TEXT_TAG: item
-            }
-
-            suggestions.append(suggestion)
-
+        suggestions = yield self.items_repository.get_question_suggestions(text)
         raise gen.Return(suggestions)
 
     @gen.coroutine
@@ -42,16 +32,7 @@ class Application(object):
         # ToDo: return answers only for this question
         # ToDo: Return from repository dict with text key
 
-        items = yield self.items_repository.get_answer_suggestions(question, text)
-
-        suggestions = []
-        for item in items:
-            suggestion = {
-                TEXT_TAG: item
-            }
-
-            suggestions.append(suggestion)
-
+        suggestions = yield self.items_repository.get_answer_suggestions(question, text)
         raise gen.Return(suggestions)
 
     @gen.coroutine
