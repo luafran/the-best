@@ -57,7 +57,7 @@ class TheBestRepository(object):
         raise gen.Return(result)
 
     @gen.coroutine
-    def get_system_questions(self):
+    def get_system_questions(self, question):
         result = []
         with (yield self.pool.Connection()) as conn:
                 with conn.cursor() as cursor:
@@ -69,8 +69,10 @@ class TheBestRepository(object):
                                 "       (SELECT max(ts) "\
                                 "          FROM actions a "\
                                 "         WHERE a.answer_question_id = q.id) as last_vote "\
-                                " FROM questions q "\
-                                "ORDER BY votes, last_vote;"
+                                " FROM questions q " \
+                                "WHERE q.id <> sha1('{0}') "\
+                                "ORDER BY votes, last_vote;"\
+                                .format(question)
                     yield cursor.execute(statement)
                     for row in cursor:
                         result.append({

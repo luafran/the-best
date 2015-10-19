@@ -47,8 +47,8 @@ class Application(object):
         raise gen.Return(None)
 
     @gen.coroutine
-    def get_system_question(self):
-        items = yield self.items_repository.get_system_questions()
+    def get_system_question(self, question):
+        items = yield self.items_repository.get_system_questions(question)
         total = len(items)
         rand_index = randrange(total-1)
         item = items[rand_index] if items else None
