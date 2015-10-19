@@ -164,7 +164,8 @@ def get_best_answers(question):
     }
 
     body = {
-        "query": query
+        "query": query,
+        "sort": {"votes": {"order": "desc"}}
     }
 
     result = yield elastic_search.search(index='the-best-test', doc_type='item', body=body)
