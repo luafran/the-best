@@ -22,6 +22,7 @@ class SuggestionsHandler(base.BaseHandler):
         if not text:
             self.build_response(exceptions.MissingArgumentValue(
                 'Missing argument {0}'.format(api.TEXT_TAG)))
+            return
 
         app = api.Application(self.application_settings.items_repository)
         if suggestion_type == api.QUESTION_TAG:
