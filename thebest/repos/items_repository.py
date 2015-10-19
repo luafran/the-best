@@ -169,8 +169,11 @@ def get_best_answers(question):
     }
 
     result = yield elastic_search.search(index='the-best-test', doc_type='item', body=body)
-    hits = result.get(HITS_TAG)
-    hits = hits.get(HITS_TAG)
+    total = result.get(HITS_TAG).get('total')
+    if total == 0:
+        result = yield _get_items_with_q_and_no_a(question)
+
+    hits = result.get(HITS_TAG).get(HITS_TAG)
 
     items = []
     for hit in hits:
