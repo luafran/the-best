@@ -68,7 +68,7 @@ def get_question_suggestions(text):
         result = [hit.get(SOURCE_TAG).get(QUESTION_TAG)
                   for hit in sorted(hits, key=lambda x: x.get(SOURCE_TAG).get(QUESTION_TAG))]
         # Remove duplicates
-        result = [key for key, group in groupby(result, lambda x: x)]
+        result = [key for key, _ in groupby(result, lambda x: x)]
     except elasticsearch.exceptions.ElasticsearchException as ex:
         raise exceptions.DatabaseOperationError('{0}'.format(ex.message))
 
@@ -96,7 +96,7 @@ def get_answer_suggestions(question, text):  # pylint: disable=unused-argument
 
 
 @gen.coroutine
-def get_items_without_answer():
+def get_system_questions():
     elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
 
     query = {
@@ -115,12 +115,22 @@ def get_items_without_answer():
 
     result = yield elastic_search.search(index='the-best-test', doc_type='item', body=body)
     hits = result.get(HITS_TAG)
+    total = hits.get('total')
+    if total == 0:
+        print "No item without answer"
+        hits = yield get_all_items()
 
-    raise gen.Return(hits)
+    items = []
+    for hit in hits.get('hits'):
+        question = hit.get('_source').get(QUESTION_TAG)
+        item = {QUESTION_TAG: question}
+        items.append(item)
+
+    raise gen.Return(items)
 
 
 @gen.coroutine
-def get_items_with_answer_to_q(question):
+def get_best_answers(question):
     elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
 
     query = {
@@ -144,7 +154,17 @@ def get_items_with_answer_to_q(question):
 
     result = yield elastic_search.search(index='the-best-test', doc_type='item', body=body)
     hits = result.get(HITS_TAG)
-    raise gen.Return(hits)
+    hits = hits.get(HITS_TAG)
+
+    items = []
+    for hit in hits:
+        source = hit.get(SOURCE_TAG)
+        item = {
+            ANSWER_TAG: source.get(ANSWER_TAG)
+        }
+        items.append(item)
+
+    raise gen.Return(items)
 
 
 @gen.coroutine
@@ -217,13 +237,12 @@ def get_all_items():
 
 
 @gen.coroutine
-def add_item(question, answer):
+def add_question(question):
     elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
 
     item_id = str(uuid.uuid4())
     body = {
         QUESTION_TAG: question,
-        ANSWER_TAG: answer,
         'suggest': {
             'input': question,
             'output': question,
@@ -242,13 +261,36 @@ def add_item(question, answer):
 
 
 @gen.coroutine
-def update_item(item_id, item):
+def add_answer(question, answer):
     elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
 
-    try:
-        result = yield elastic_search.index(index='the-best-test', doc_type='item', id=item_id, body=item)
-        raise gen.Return(result)
-    except elasticsearch.exceptions.NotFoundError:
-        raise gen.Return(exceptions.NotFound('item id {0}'.format(item_id)))
-    except elasticsearch.exceptions.ElasticsearchException as ex:
-        raise gen.Return(exceptions.DatabaseOperationError('ex: {0}'.format(ex.message)))
+    query = {
+        "match_phrase": {
+            QUESTION_TAG: question
+        }
+    }
+
+    query_filter = {
+        "missing": {
+            "field": ANSWER_TAG
+        }
+    }
+
+    body = {
+        "query" : {
+            "filtered": {
+                "query": query,
+                "filter": query_filter
+            }
+        }
+    }
+
+    hits = yield elastic_search.search(index='the-best-test', doc_type='item', body=body)
+    hits = hits.get(HITS_TAG)
+    total = hits.get('total')
+    if total > 0:
+        print "Add answer to question"
+    else:
+        print "We have to add a vote"
+
+    raise gen.Return(None)

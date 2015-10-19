@@ -5,15 +5,12 @@ from thebest.common.handlers import base
 from thebest.common.handlers import decorators
 
 
-class UserQuestionHandler(base.BaseHandler):
+class SystemQuestionHandler(base.BaseHandler):
 
     @decorators.api_key_authorization
     @gen.coroutine
     def get(self):
-        items = yield api.get_question_for_user()
-
-        response = {
-            "items": items
-        }
+        app = api.Application(self.application_settings.items_repository)
+        response = yield app.get_system_question()
 
         self.build_response(response)
