@@ -16,6 +16,7 @@ class QuestionHandler(base.BaseHandler):
         if not item.get(api.QUESTION_TAG):
             response = exceptions.MissingArgumentValue('Missing argument {0}'.format(api.QUESTION_TAG))
         else:
-            response = yield api.add_question(item.get(api.QUESTION_TAG))
+            app = api.Application(self.application_settings.items_repository)
+            response = yield app.add_question(item.get(api.QUESTION_TAG))
 
         self.build_response(response)

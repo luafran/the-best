@@ -65,15 +65,20 @@ class Application(object):
         yield items_repository.add_question(question)
         raise gen.Return(None)
 
+    @gen.coroutine
+    def get_system_question(self):
+        items = yield items_repository.get_system_questions()
+        total = len(items)
+        rand_index = randrange(total-1)
+        item = items[rand_index] if items else None
 
-@gen.coroutine
-def get_system_question():
-    items = yield items_repository.get_system_questions()
-    total = len(items)
-    rand_index = randrange(total-1)
-    item = items[rand_index] if items else None
+        raise gen.Return(item)
 
-    raise gen.Return(item)
+    @gen.coroutine
+    def process_user_answer(self, question, answer):
+        # ToDo: convert external item to internal item
+        result = yield items_repository.add_answer(question, answer)
+        raise gen.Return(result)
 
 
 @gen.coroutine
@@ -102,10 +107,3 @@ def get_items_q(question):
         result_list.append(result_item)
 
     raise gen.Return(result_list)
-
-
-@gen.coroutine
-def update_item_answer(item_id, answer):
-    # ToDo: convert external item to internal item
-    result = yield items_repository.update_item_answer(item_id, answer)
-    raise gen.Return(result)

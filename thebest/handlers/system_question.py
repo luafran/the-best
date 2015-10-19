@@ -10,6 +10,7 @@ class SystemQuestionHandler(base.BaseHandler):
     @decorators.api_key_authorization
     @gen.coroutine
     def get(self):
-        response = yield api.get_system_question()
+        app = api.Application(self.application_settings.items_repository)
+        response = yield app.get_system_question()
 
         self.build_response(response)
