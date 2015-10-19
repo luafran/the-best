@@ -57,8 +57,8 @@ class Application(object):
     @gen.coroutine
     def get_best_answer(self, question):
         items = yield items_repository.get_best_answers(question)
-
-        raise gen.Return(items[0])
+        result = items[0] if items else None
+        raise gen.Return(result)
 
     @gen.coroutine
     def add_question(self, question):
