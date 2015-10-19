@@ -35,9 +35,7 @@ create table if not exists action_types
 ) engine=MyISAM;
 
 insert into action_types values('VOTE');
-insert into action_types values('AGREE');
-insert into action_types values('DESAGREE');
-insert into action_types values('ASK');
+insert into action_types values('SKIP');
 
 create table if not exists actions
 (
@@ -146,17 +144,28 @@ select id,
 	   question,
 	   (select count(*)
 		  from answers a
-		 where a.question_id = q.id) as answers,
+		 where a.answer_question_id = q.id) as answers,
 	   (select count(*)
 		  from actions a
-		 where a.question_id = q.id) as votes,
+		 where a.answer_question_id = q.id) as votes,
 	   (select max(ts)
 		  from actions a
-		 where a.question_id = q.id) as last_vote
+		 where a.answer_question_id = q.id) as last_vote
  from questions q
 order by votes, last_vote
 
 select sha1(question), question
   from questions
 
+select * from actions;
 
+select id,
+	   question,
+	   (select count(*)
+		  from actions a
+		 where a.answer_question_id = q.id) as votes,
+	   (select max(ts)
+		  from actions a
+		 where a.answer_question_id = q.id) as last_vote
+ from questions q
+order by votes, last_vote

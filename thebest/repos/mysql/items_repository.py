@@ -2,6 +2,12 @@ from tornado import gen
 import tormysql
 from thebest.common import settings
 
+QUESTION_TAG = 'q'
+ANSWER_TAG = 'a'
+TEXT_TAG = 'text'
+ID_TAG = 'id'
+VOTES_TAG = 'votes'
+LAST_VOTE_TAG = 'last_vote'
 
 class TheBestRepository(object):
     def __init__(self):
@@ -26,7 +32,9 @@ class TheBestRepository(object):
                         .format(text)
                     yield cursor.execute(statement)
                     for row in cursor:
-                        result.append(row[0])
+                        result.append({
+                            TEXT_TAG: row[0]
+                        })
         raise gen.Return(result)
 
     @gen.coroutine
@@ -41,34 +49,37 @@ class TheBestRepository(object):
                         .format(question, text)
                     yield cursor.execute(statement)
                     for row in cursor:
-                        result.append(row[0])
+                        result.append({
+                            TEXT_TAG: row[0]
+                        })
+        raise gen.Return(result)
+
+    @gen.coroutine
+    def get_system_questions(self):
+        result = []
+        with (yield self.pool.Connection()) as conn:
+                with conn.cursor() as cursor:
+                    statement = "SELECT id, "\
+                                "       question, "\
+                                "       (SELECT count(*) "\
+                                "          FROM actions a "\
+                                "         WHERE a.answer_question_id = q.id) as votes, "\
+                                "       (SELECT max(ts) "\
+                                "          FROM actions a "\
+                                "         WHERE a.answer_question_id = q.id) as last_vote "\
+                                " FROM questions q "\
+                                "ORDER BY votes, last_vote;"
+                    yield cursor.execute(statement)
+                    for row in cursor:
+                        result.append({
+                            ID_TAG: row[0],
+                            QUESTION_TAG: row[1],
+                            VOTES_TAG: row[2],
+                            LAST_VOTE_TAG: row[3]
+                        })
         raise gen.Return(result)
 
 """
-    @gen.coroutine
-    def get_system_questions(): # change to get_questions_for_user
-        elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
-
-        query = {
-            "filtered": {
-                "filter": {
-                    "missing": {
-                        "field": ANSWER_TAG
-                    }
-                }
-            }
-        }
-
-        body = {
-            "query": query
-        }
-
-        result = yield elastic_search.search(index='the-best-test', doc_type='item', body=body)
-        hits = result.get(HITS_TAG)
-
-        raise gen.Return(hits)
-
-
     @gen.coroutine
     def get_best_answer(question): # return item array list (sorted by relevance)
         elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
