@@ -138,6 +138,11 @@ curl -X POST 'http://localhost:9200/the-best-test/item/_search?pretty'
 Elasticsearch API used by the-best
 ==================================
 
+https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-filtered-query.html
+https://www.elastic.co/guide/en/elasticsearch/guide/current/_combining_queries_with_filters.html
+https://www.elastic.co/guide/en/elasticsearch/guide/current/multi-query-strings.html
+
+
 Suggest question
 ----------------
 

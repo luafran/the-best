@@ -14,6 +14,7 @@ CREATED_TAG = 'created'
 QUESTION_TAG = 'q'
 ANSWER_TAG = 'a'
 TEXT_TAG = 'text'
+VOTES_TAG = 'votes'
 
 
 ELASTIC_SEARCH_ENDPOINT = '52.88.14.176'
@@ -79,12 +80,26 @@ def get_question_suggestions(text):
 def get_answer_suggestions(question, text):  # pylint: disable=unused-argument
 
     elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
-    body = {
-        'query': {
-            'prefix': {
-                ANSWER_TAG: text.lower()
-            }
+
+    query = {
+        "bool": {
+            "must": [
+                {
+                    "match_phrase": {
+                        QUESTION_TAG: question
+                    }
+                },
+                {
+                    "prefix": {
+                        ANSWER_TAG: text.lower()
+                    }
+                }
+            ]
         }
+    }
+
+    body = {
+        'query': query
     }
 
     result = yield elastic_search.search(index='the-best-test', doc_type='item', body=body)
@@ -118,7 +133,7 @@ def get_system_questions():
     total = hits.get('total')
     if total == 0:
         print "No item without answer"
-        hits = yield get_all_items()
+        hits = yield _get_all_items()
 
     items = []
     for hit in hits.get('hits'):
@@ -149,12 +164,16 @@ def get_best_answers(question):
     }
 
     body = {
-        "query": query
+        "query": query,
+        "sort": {"votes": {"order": "desc"}}
     }
 
     result = yield elastic_search.search(index='the-best-test', doc_type='item', body=body)
-    hits = result.get(HITS_TAG)
-    hits = hits.get(HITS_TAG)
+    total = result.get(HITS_TAG).get('total')
+    if total == 0:
+        result = yield _get_items_with_q_and_no_a(question)
+
+    hits = result.get(HITS_TAG).get(HITS_TAG)
 
     items = []
     for hit in hits:
@@ -168,7 +187,65 @@ def get_best_answers(question):
 
 
 @gen.coroutine
-def get_items_with_q_and_a(question, answer):
+def add_question(question):
+    elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
+
+    item_id = str(uuid.uuid4())
+    body = {
+        QUESTION_TAG: question,
+        'suggest': {
+            'input': question,
+            'output': question,
+            'payload': {
+                'item_id': item_id
+            },
+            'weight': 1
+        }
+    }
+
+    # Two yields? yes!
+    result = yield elastic_search.create(index='the-best-test', doc_type='item', id=item_id, body=body)
+    result = yield result
+
+    raise gen.Return(result)
+
+
+@gen.coroutine
+def add_answer(question, answer):
+
+    hits = yield _get_items_with_q_and_no_a(question)
+    hits = hits.get(HITS_TAG)
+    total = hits.get('total')
+    if total > 0:
+        # We have an item with this question and no answer
+        # This is a rae condition!!! Another instance may be updating this item at the same time
+        print "Add answer to question"
+        hit = hits.get(HITS_TAG)[0]
+        item_id = hit.get(ID_TAG)
+        item = hit.get(SOURCE_TAG)
+        item[ANSWER_TAG] = answer
+        yield _update_item(item_id, item)
+    else:
+        # Do we have this items?
+        hits = yield _get_items_with_q_and_a(question, answer)
+        total = hits.get('total')
+        if total > 0:
+            # Yes, we have to add a vote
+            # This is a rae condition!!! Another instance may be updating this item at the same time
+            hit = hits.get(HITS_TAG)[0]
+            item_id = hit.get(ID_TAG)
+            item = hit.get(SOURCE_TAG)
+            item[VOTES_TAG] = item.get(VOTES_TAG, 0) + 1
+            yield _update_item(item_id, item)
+        else:
+            # No, we have to add a new item with this q and a
+            yield _add_item(question, answer)
+
+    raise gen.Return(None)
+
+
+@gen.coroutine
+def _get_items_with_q_and_a(question, answer):
     elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
 
     query = {
@@ -198,70 +275,7 @@ def get_items_with_q_and_a(question, answer):
 
 
 @gen.coroutine
-def get_items_with_question(question):
-    elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
-
-    params = {
-        QUESTION_TAG: QUESTION_TAG + ':' + question
-    }
-
-    results = yield elastic_search.search(index='the-best-test',
-                                          doc_type='item',
-                                          params=params)
-    hits = results.get(HITS_TAG)
-    raise gen.Return(hits)
-
-
-@gen.coroutine
-def get_item(item_id):
-    elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
-
-    try:
-        item = yield elastic_search.get(index='the-best-test', doc_type='item', id=item_id)
-    except elasticsearch.exceptions.NotFoundError:
-        raise exceptions.NotFound('item id {0}'.format(item_id))
-    except elasticsearch.exceptions.ElasticsearchException as ex:
-        raise exceptions.DatabaseOperationError('ex: {0}'.format(ex.message))
-
-    raise gen.Return(item)
-
-
-@gen.coroutine
-def get_all_items():
-    elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
-
-    result = yield elastic_search.search(index='the-best-test',
-                                         doc_type='item')
-    hits = result.get(HITS_TAG)
-    raise gen.Return(hits)
-
-
-@gen.coroutine
-def add_question(question):
-    elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
-
-    item_id = str(uuid.uuid4())
-    body = {
-        QUESTION_TAG: question,
-        'suggest': {
-            'input': question,
-            'output': question,
-            'payload': {
-                'item_id': item_id
-            },
-            'weight': 1
-        }
-    }
-
-    # Two yields? yes!
-    result = yield elastic_search.create(index='the-best-test', doc_type='item', id=item_id, body=body)
-    result = yield result
-
-    raise gen.Return(result)
-
-
-@gen.coroutine
-def add_answer(question, answer):
+def _get_items_with_q_and_no_a(question):
     elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
 
     query = {
@@ -286,11 +300,79 @@ def add_answer(question, answer):
     }
 
     hits = yield elastic_search.search(index='the-best-test', doc_type='item', body=body)
-    hits = hits.get(HITS_TAG)
-    total = hits.get('total')
-    if total > 0:
-        print "Add answer to question"
-    else:
-        print "We have to add a vote"
+    raise gen.Return(hits)
 
-    raise gen.Return(None)
+
+@gen.coroutine
+def _get_items_with_question(question):
+    elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
+
+    params = {
+        QUESTION_TAG: QUESTION_TAG + ':' + question
+    }
+
+    hits = yield elastic_search.search(index='the-best-test', doc_type='item', params=params)
+
+    raise gen.Return(hits)
+
+
+@gen.coroutine
+def _get_all_items():
+    elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
+
+    result = yield elastic_search.search(index='the-best-test',
+                                         doc_type='item')
+    hits = result.get(HITS_TAG)
+    raise gen.Return(hits)
+
+
+@gen.coroutine
+def _get_item(item_id):
+    elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
+
+    try:
+        item = yield elastic_search.get(index='the-best-test', doc_type='item', id=item_id)
+    except elasticsearch.exceptions.NotFoundError:
+        raise exceptions.NotFound('item id {0}'.format(item_id))
+    except elasticsearch.exceptions.ElasticsearchException as ex:
+        raise exceptions.DatabaseOperationError('ex: {0}'.format(ex.message))
+
+    raise gen.Return(item)
+
+
+@gen.coroutine
+def _add_item(question, answer):
+    elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
+
+    item_id = str(uuid.uuid4())
+    body = {
+        QUESTION_TAG: question,
+        ANSWER_TAG: answer,
+        'suggest': {
+            'input': question,
+            'output': question,
+            'payload': {
+                'item_id': item_id
+            },
+            'weight': 1
+        }
+    }
+
+    # Two yields? yes!
+    result = yield elastic_search.create(index='the-best-test', doc_type='item', id=item_id, body=body)
+    result = yield result
+
+    raise gen.Return(result)
+
+
+@gen.coroutine
+def _update_item(item_id, item):
+    elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
+
+    try:
+        result = yield elastic_search.index(index='the-best-test', doc_type='item', id=item_id, body=item)
+        raise gen.Return(result)
+    except elasticsearch.exceptions.NotFoundError:
+        raise gen.Return(exceptions.NotFound('item id {0}'.format(item_id)))
+    except elasticsearch.exceptions.ElasticsearchException as ex:
+        raise gen.Return(exceptions.DatabaseOperationError('ex: {0}'.format(ex.message)))
