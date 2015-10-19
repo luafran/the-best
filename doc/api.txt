@@ -111,3 +111,19 @@ Response:
 Repository:
 vote_answer(q="system_question", a="user_answer"):
 	None | InfoException
+
+
+skip a given answer
+-------------------
+
+POST /skip
+
+Request body:
+{"q": "question"}
+
+Response:
+201: null
+
+Repository:
+skip_answer(q="system_question"):
+	None | InfoException

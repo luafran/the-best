@@ -1,6 +1,14 @@
 from tornado import gen
 import tormysql
 from thebest.common import settings
+from thebest.common import exceptions
+
+QUESTION_TAG = 'q'
+ANSWER_TAG = 'a'
+TEXT_TAG = 'text'
+ID_TAG = 'id'
+VOTES_TAG = 'votes'
+LAST_VOTE_TAG = 'last_vote'
 
 
 class TheBestRepository(object):
@@ -26,7 +34,9 @@ class TheBestRepository(object):
                         .format(text)
                     yield cursor.execute(statement)
                     for row in cursor:
-                        result.append(row[0])
+                        result.append({
+                            TEXT_TAG: row[0]
+                        })
         raise gen.Return(result)
 
     @gen.coroutine
@@ -41,148 +51,88 @@ class TheBestRepository(object):
                         .format(question, text)
                     yield cursor.execute(statement)
                     for row in cursor:
-                        result.append(row[0])
+                        result.append({
+                            TEXT_TAG: row[0]
+                        })
         raise gen.Return(result)
 
-"""
     @gen.coroutine
-    def get_system_questions(): # change to get_questions_for_user
-        elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
-
-        query = {
-            "filtered": {
-                "filter": {
-                    "missing": {
-                        "field": ANSWER_TAG
-                    }
-                }
-            }
-        }
-
-        body = {
-            "query": query
-        }
-
-        result = yield elastic_search.search(index='the-best-test', doc_type='item', body=body)
-        hits = result.get(HITS_TAG)
-
-        raise gen.Return(hits)
-
-
-    @gen.coroutine
-    def get_best_answer(question): # return item array list (sorted by relevance)
-        elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
-
-        query = {
-            "filtered": {
-                "filter": {
-                    "exists": {
-                        "field": ANSWER_TAG
-                    }
-                },
-                "query": {
-                    "match": {
-                        QUESTION_TAG: question
-                    }
-                }
-            }
-        }
-
-        body = {
-            "query": query
-        }
-
-        result = yield elastic_search.search(index='the-best-test', doc_type='item', body=body)
-        hits = result.get(HITS_TAG)
-        raise gen.Return(hits)
-
-
-    @gen.coroutine
-    def get_items_q_a(question, answer): #?????
-        elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
-
-        query = {
-            "bool": {
-                "must": [
-                    {
-                        "match_phrase": {
-                            QUESTION_TAG: question
-                        }
-                    },
-                    {
-                        "match_phrase": {
-                            ANSWER_TAG: answer
-                        }
-                    }
-                ]
-            }
-        }
-
-        body = {
-            "query": query
-        }
-
-        result = yield elastic_search.search(index='the-best-test', doc_type='item', body=body)
-        hits = result.get(HITS_TAG)
-        raise gen.Return(hits)
-
-
-    @gen.coroutine
-    def get_items_q(question): #????
-        elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
-
-        params = {
-            QUESTION_TAG: QUESTION_TAG + ':' + question
-        }
-
-        results = yield elastic_search.search(index='the-best-test',
-                                              doc_type='item',
-                                              params=params)
-        hits = results.get(HITS_TAG)
-        raise gen.Return(hits)
-
-
-    @gen.coroutine
-    def get_items(): # ????
-        elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
-
-        result = yield elastic_search.search(index='the-best-test',
-                                             doc_type='item')
-        hits = result.get(HITS_TAG)
-        raise gen.Return(hits)
-
-
-    @gen.coroutine
-    def add_item(question, answer): # insert_question(q)
-        elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
-
-        item_id = str(uuid.uuid4())
-        body = {
-            QUESTION_TAG: question,
-            ANSWER_TAG: answer,
-            'suggest': {
-                'input': question,
-                'output': question,
-                'payload': {
-                    'item_id': item_id
-                },
-                'weight': 1
-            }
-        }
-
-        # Two yields? yes!
-        result = yield elastic_search.create(index='the-best-test', doc_type='item', id=item_id, body=body)
-        result = yield result
-
+    def get_system_questions(self):
+        result = []
+        with (yield self.pool.Connection()) as conn:
+                with conn.cursor() as cursor:
+                    statement = "SELECT id, "\
+                                "       question, "\
+                                "       (SELECT count(*) "\
+                                "          FROM actions a "\
+                                "         WHERE a.answer_question_id = q.id) as votes, "\
+                                "       (SELECT max(ts) "\
+                                "          FROM actions a "\
+                                "         WHERE a.answer_question_id = q.id) as last_vote "\
+                                " FROM questions q "\
+                                "ORDER BY votes, last_vote;"
+                    yield cursor.execute(statement)
+                    for row in cursor:
+                        result.append({
+                            ID_TAG: row[0],
+                            QUESTION_TAG: row[1],
+                            VOTES_TAG: row[2],
+                            LAST_VOTE_TAG: (row[3].isoformat() if row[3] else None),
+                        })
         raise gen.Return(result)
 
+    @gen.coroutine
+    def get_best_answers(self, question):
+        result = []
+        with (yield self.pool.Connection()) as conn:
+                with conn.cursor() as cursor:
+                    statement = "SELECT a.id as answer_id, "\
+                                "       a.answer, "\
+                                "       (SELECT count(*) " \
+                                "          FROM actions ac " \
+                                "         WHERE ac.answer_question_id = q.id) as votes" \
+                                "  FROM questions q " \
+                                "       JOIN answers a " \
+                                "         ON a.question_id = q.id " \
+                                " WHERE q.id = sha1('{0}') " \
+                                " ORDER BY votes DESC "\
+                                .format(question)
+                    yield cursor.execute(statement)
+                    for row in cursor:
+                        result.append({
+                            ID_TAG: row[0],
+                            ANSWER_TAG: row[1],
+                            VOTES_TAG: row[2],
+                        })
+        raise gen.Return(result)
 
     @gen.coroutine
-    def update_item_answer(item_id, answer): # insert_answer(q, a)
-        elastic_search = AsyncElasticsearch(hosts=ELASTIC_SEARCH_ENDPOINT)
+    def add_question(self, question):
+        with (yield self.pool.Connection()) as conn:
+                with conn.cursor() as cursor:
+                    statement = "INSERT INTO questions(id, question) " \
+                                " VALUES(sha1('{0}'), '{0}');"\
+                        .format(question)
+                    yield cursor.execute(statement)
 
-        item = yield elastic_search.get(index='the-best-test', doc_type='item', id=item_id)
-        item[SOURCE_TAG][ANSWER_TAG] = answer
+    @gen.coroutine
+    def add_answer(self, question, answer):
+        with (yield self.pool.Connection()) as conn:
+                with conn.cursor() as cursor:
+                    statement = "SELECT count(*) " \
+                                "  FROM questions " \
+                                " WHERE id = sha1('{0}'); " \
+                        .format(question)
+                    yield cursor.execute(statement)
+                    if cursor.fetchone()[0] == 0:
+                        raise exceptions.InvalidArgument('The question: {0} does not exist'.format(question))
 
-        elastic_search.index(index='the-best-test', doc_type='item', id=item_id, body=item[SOURCE_TAG])
-"""
+                    statement = "INSERT IGNORE INTO answers(question_id, id, answer)" \
+                                " VALUES(sha1('{0}'), sha1('{1}'), '{1}');"\
+                        .format(question, answer)
+                    yield cursor.execute(statement)
+
+                    statement = "INSERT INTO actions(answer_question_id, answer_id, type)" \
+                                " VALUES(sha1('{0}'), sha1('{1}'), '{1}');"\
+                        .format(question, answer, "VOTE")
+                    yield cursor.execute(statement)
