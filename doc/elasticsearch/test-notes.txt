@@ -108,6 +108,12 @@ curl -X GET 'http://localhost:9200/the-best-test/category/_search?pretty' -d '
 }'
 
 
+Simple search
+-------------
+
+curl -X POST 'http://localhost:9200/the-best-test/item/_search?q=undefined&pretty' | less
+
+
 Search without duplicates
 -------------------------
 http://stackoverflow.com/questions/25448186/remove-duplicate-documents-from-a-search-in-elasticsearch

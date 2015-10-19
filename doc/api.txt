@@ -38,7 +38,8 @@ GET /best_answer?q=question
 
 Response:
 200: {"a": "best_answer"}
-200: null -> no answer yet
+200: null -> fist time question (no answer yet)
+200: {"a": null} -> question exists but no answer yet
 
 
 Repository:
