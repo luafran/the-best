@@ -23,7 +23,8 @@ class Application(object):
 
         # ToDo: Return from repository dict with text key
 
-        items = yield self.items_repository.get_question_suggestions(text)
+        # items = yield self.items_repository.get_question_suggestions(text)
+        items = yield items_repository.get_question_suggestions(text)
 
         suggestions = []
         for item in items:
@@ -42,7 +43,8 @@ class Application(object):
         # ToDo: return answers only for this question
         # ToDo: Return from repository dict with text key
 
-        items = yield self.items_repository.get_answer_suggestions(question, text)
+        # items = yield self.items_repository.get_answer_suggestions(question, text)
+        items = yield items_repository.get_answer_suggestions(question, text)
 
         suggestions = []
         for item in items:
