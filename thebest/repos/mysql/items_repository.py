@@ -30,7 +30,8 @@ class TheBestRepository(object):
                 with conn.cursor() as cursor:
                     statement = "SELECT question " \
                                 "  FROM questions " \
-                                " WHERE MATCH(question) AGAINST('+{0}*' IN BOOLEAN MODE);"\
+                                " WHERE MATCH(question) AGAINST('+{0}*' IN BOOLEAN MODE) " \
+                                " LIMIT 10;"\
                         .format(text)
                     yield cursor.execute(statement)
                     for row in cursor:
@@ -47,7 +48,8 @@ class TheBestRepository(object):
                     statement = "SELECT answer " \
                                 "  FROM answers " \
                                 " WHERE question_id = sha1('{0}') " \
-                                "   AND MATCH(answer) AGAINST('+{1}*' IN BOOLEAN MODE);"\
+                                "   AND MATCH(answer) AGAINST('+{1}*' IN BOOLEAN MODE) " \
+                                " LIMIT 10;"\
                         .format(question, text)
                     yield cursor.execute(statement)
                     for row in cursor:
@@ -71,7 +73,8 @@ class TheBestRepository(object):
                                 "         WHERE a.answer_question_id = q.id) as last_vote "\
                                 " FROM questions q " \
                                 "WHERE q.id <> sha1('{0}') "\
-                                "ORDER BY votes, last_vote;"\
+                                "ORDER BY votes, last_vote " \
+                                "LIMIT 10;"\
                                 .format(question)
                     yield cursor.execute(statement)
                     for row in cursor:
@@ -97,7 +100,8 @@ class TheBestRepository(object):
                                 "       LEFT OUTER JOIN answers a " \
                                 "         ON a.question_id = q.id " \
                                 " WHERE q.id = sha1('{0}') " \
-                                " ORDER BY votes DESC "\
+                                " ORDER BY votes DESC " \
+                                " LIMIT 5;"\
                                 .format(question)
                     yield cursor.execute(statement)
                     for row in cursor:

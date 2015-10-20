@@ -169,3 +169,4 @@ select id,
 		 where a.answer_question_id = q.id) as last_vote
  from questions q
 order by votes, last_vote
+ limit 10;
