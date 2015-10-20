@@ -6,6 +6,7 @@ from tornado import web
 
 from thebest.common import settings
 from thebest.common.handlers import health
+from thebest.handlers import action
 from thebest.handlers import best_answer
 from thebest.handlers import question
 from thebest.handlers import suggestions
@@ -37,6 +38,8 @@ APPLICATION = web.Application(
          {'application_settings': settings, 'handler': 'APISystemQuestion'}, 'api_system_question'),
         (r'.*/api/user_answer', user_answer.UserAnswerHandler,
          {'application_settings': settings, 'handler': 'APIUserAnswer'}, 'api_user_answer'),
+        (r'.*/api/action', action.ActionHandler,
+         {'application_settings': settings, 'handler': 'Action'}, 'action'),
         (r'.*/', main.MainHandler,
          {'application_settings': settings, 'handler': 'Main'}, 'main'),
         (r'.*/user_question', user_question.UserQuestionHandler,

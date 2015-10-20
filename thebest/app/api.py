@@ -58,3 +58,8 @@ class Application(object):
         # ToDo: convert external item to internal item
         result = yield self.items_repository.add_answer(question, answer)
         raise gen.Return(result)
+
+    @gen.coroutine
+    def process_action(self, action_type, question, answer):
+        result = yield self.items_repository.add_action(action_type, question, answer)
+        raise gen.Return(result)

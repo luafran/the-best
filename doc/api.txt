@@ -67,7 +67,7 @@ add_question(q="new_question"):
 Get question for the user to answer
 -----------------------------------
 
-GET /system_question
+GET /system_question?q=user_question
 
 Response:
 200: {"q": "system_question"}
@@ -99,10 +99,10 @@ add_answer(q="system_question", a="user_answer"):
 Vote a given answer
 -------------------
 
-POST /vote
+POST /action
 
 Request body:
-{"q": "question", "a": "answer"}
+{"type": "VOTE", "q": "question", "a": "answer"}
 
 Response:
 201: null

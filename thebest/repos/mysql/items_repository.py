@@ -10,6 +10,8 @@ ID_TAG = 'id'
 VOTES_TAG = 'votes'
 LAST_VOTE_TAG = 'last_vote'
 
+ACTION_VOTE = 'VOTE'
+
 
 class TheBestRepository(object):
     def __init__(self):
@@ -138,7 +140,27 @@ class TheBestRepository(object):
                         .format(question, answer)
                     yield cursor.execute(statement)
 
-                    statement = "INSERT INTO actions(answer_question_id, answer_id, type)" \
-                                " VALUES(sha1('{0}'), sha1('{1}'), '{1}');"\
-                        .format(question, answer, "VOTE")
-                    yield cursor.execute(statement)
+                    yield self.add_action(ACTION_VOTE, question, answer)
+
+    @gen.coroutine
+    def add_action(self, action_type, question, answer):
+        with (yield self.pool.Connection()) as conn:
+                with conn.cursor() as cursor:
+
+                    # Only VOTE so far
+                    # ToDo: should this check be here?
+                    if action_type == ACTION_VOTE:
+                        statement = "SELECT count(*) " \
+                                    "  FROM answers " \
+                                    " WHERE question_id = sha1('{0}') and id = sha1('{1}'); " \
+                            .format(question, answer)
+                        yield cursor.execute(statement)
+                        if cursor.fetchone()[0] == 0:
+                            raise exceptions.InvalidArgument('No answer for question: {0}'.format(question))
+
+                        statement = "INSERT INTO actions(answer_question_id, answer_id, type)" \
+                                    " VALUES(sha1('{0}'), sha1('{1}'), '{2}');"\
+                            .format(question, answer, action_type)
+                        yield cursor.execute(statement)
+                    else:
+                        raise exceptions.InvalidArgument('Unsupported action type: {0}'.format(action_type))
