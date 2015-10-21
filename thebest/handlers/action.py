@@ -15,7 +15,7 @@ class ActionHandler(base.BaseHandler):
         if not item.get(api.TYPE_TAG):
             response = exceptions.MissingArgumentValue('Missing "{0}" field in body'.format(api.TYPE_TAG))
         else:
-            app = api.Application(self.application_settings.items_repository)
+            app = api.Application(self.context, self.application_settings.items_repository)
             response = yield app.process_action(item.get(api.TYPE_TAG),
                                                 item.get(api.QUESTION_TAG),
                                                 item.get(api.ANSWER_TAG))

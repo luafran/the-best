@@ -1,6 +1,4 @@
-from random import randrange
 from tornado import gen
-from thebest.repos import items_repository
 
 # These are the names used externally against clients
 # Do not confuse with names used internally in our repository
@@ -15,14 +13,14 @@ TYPE_TAG = 'type'
 
 class Application(object):
 
-    def __init__(self, repository):
+    def __init__(self, context, repository):
+        self.context = context
         self.items_repository = repository
 
     @gen.coroutine
     def get_question_suggestions(self, text):
 
         # ToDo: Return from repository dict with text key
-
         suggestions = yield self.items_repository.get_question_suggestions(text)
         raise gen.Return(suggestions)
 

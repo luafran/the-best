@@ -291,7 +291,7 @@ def _get_items_with_q_and_no_a(question):
     }
 
     body = {
-        "query" : {
+        "query": {
             "filtered": {
                 "query": query,
                 "filter": query_filter

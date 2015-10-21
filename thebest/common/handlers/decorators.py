@@ -32,7 +32,7 @@ def oauth2_authorization(func=None):
                     self.request.token = JWTToken(
                         token=token_str,
                         certificate=self.application_settings.PRIVATE_CERTIFICATE)
-                    self.context = Context(self.request)
+                    self.context = Context(self.request, self.support)
                     self.support.stat_set('active_families', self.context.account_id)
                     self.support.stat_set('active_devices', self.context.device_id)
                     logger = getLogger(settings.ANALYTICS_LOGGER_NAME)
@@ -105,7 +105,7 @@ def api_key_authorization(func=None, api_key_name='client_id', render_response=F
                 # if not result:
                 #    raise exceptions.Unauthorized('Invalid client_id query parameter.')
 
-                self.context = Context(self.request)
+                self.context = Context(self.request, self.support)
                 yield func(self, *args, **kwargs)
             except exceptions.InfoException as ex:
                 self.support.notify_error(ex)

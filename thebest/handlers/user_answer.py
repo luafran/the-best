@@ -16,7 +16,7 @@ class UserAnswerHandler(base.BaseHandler):
             response = exceptions.MissingArgumentValue(
                 'Missing "{0}" or "{1}" field in body'.format(api.QUESTION_TAG, api.ANSWER_TAG))
         else:
-            app = api.Application(self.application_settings.items_repository)
+            app = api.Application(self.context, self.application_settings.items_repository)
             response = yield app.process_user_answer(item.get(api.QUESTION_TAG), item.get(api.ANSWER_TAG))
 
         self.build_response(response)

@@ -33,6 +33,8 @@ MYSQL_PASSWD = "password"
 MYSQL_DB = "thebest"
 MYSQL_CHARSET = "utf8"
 
+GEOIP_DATABASE_FILE = os.path.join(os.path.expanduser("~"), 'GeoLite2-City.mmdb')
+
 LOG_DIR = os.path.expanduser("~")
 LOG_LEVEL = 'DEBUG'
 LOGGER_NAME = 'service'

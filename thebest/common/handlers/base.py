@@ -9,6 +9,7 @@ import sys
 import uuid
 from datetime import datetime
 
+import geoip2.database
 from logging import config
 from logging import getLogger
 import strict_rfc3339
@@ -109,7 +110,8 @@ class BaseHandler(web.RequestHandler):  # pylint: disable=too-many-instance-attr
             self.support.notify_debug(
                 "[BaseHandler] request query: %s" % str(request.query))
             self.support.notify_debug(
-                "[BaseHandler] request headers: %s" % str(request.headers))
+                "[BaseHandler] request headers: %s" % str(['{0}: {1}'.format(k,v)
+                                                           for k, v in request.headers.get_all()]))
             self.support.notify_debug(
                 "[BaseHandler] request body: %s" % str(request.body))
 
@@ -329,10 +331,11 @@ class Context(object):  # pylint: disable=too-many-instance-attributes
     Context
     """
 
-    def __init__(self, request=None):
+    def __init__(self, request=None, support=None):
         """
         Constructor
         """
+        self.support = support
         self.account_id = None
         self.client_id = None
         self.device_id = None
@@ -345,6 +348,8 @@ class Context(object):  # pylint: disable=too-many-instance-attributes
         self.request_timezone = None
         self.timestamp_header_value = None
         self.language = None
+        self.remote_ip = None
+        self.request_country_code = None
 
         if request:
             self.request_id = request.headers.get(
@@ -358,6 +363,23 @@ class Context(object):  # pylint: disable=too-many-instance-attributes
                 self.request_timezone = ':'.join([
                     self.request_timezone[:-2], self.request_timezone[-2:]])
             self.language = getattr(request, 'language', constants.DEFAULT_LANGUAGE)
+
+            self.remote_ip = request.headers.get('X-Forwarded-For',
+                                                 request.headers.get('X-Real-Ip',
+                                                                     request.remote_ip))
+            self.support.notify_debug("[BaseHandler] Remote IP: {0}".format(self.remote_ip))
+            try:
+                reader = geoip2.database.Reader(settings.GEOIP_DATABASE_FILE)
+                response = reader.city(self.remote_ip)
+                self.request_country_code = response.country.iso_code
+                reader.close()
+            except geoip2.errors.AddressNotFoundError:
+                pass
+            except IOError:
+                self.support.notify_warning(
+                    "[BaseHandler] geoip database: {0} not found".format(settings.GEOIP_DATABASE_FILE))
+
+            self.support.notify_debug("[BaseHandler] Request Country: {0}".format(self.request_country_code))
 
         token = getattr(request, 'token', None)
         self.update_from_token(token)

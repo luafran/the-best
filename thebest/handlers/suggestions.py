@@ -24,7 +24,7 @@ class SuggestionsHandler(base.BaseHandler):
                 'Missing argument {0}'.format(api.TEXT_TAG)))
             return
 
-        app = api.Application(self.application_settings.items_repository)
+        app = api.Application(self.context, self.application_settings.items_repository)
         if suggestion_type == api.QUESTION_TAG:
             items = yield app.get_question_suggestions(text)
         elif suggestion_type == api.ANSWER_TAG:
