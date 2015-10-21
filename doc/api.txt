@@ -1,8 +1,16 @@
 API Client - Backend - Repository
 =================================
 
-Get question suggestions
-------------------------
+Get fixed list of question suggestions/examples
+-----------------------------------------------
+
+GET /suggestions?type=sysq
+200: {"suggestions": [{"text": "restaurante"}, {"text": "restaurante de cordoba"}]}
+200: {"suggestions": []}
+
+
+Get question suggestions (autocomplete)
+---------------------------------------
 
 GET /suggestions?type=q&text=cor
 
@@ -16,8 +24,8 @@ get_question_suggestions(text="cor"):
 	[{"text": "cortadora de ceped"}, {"text": "corte de asado"}] | [] | InfoException
 
 
-Get answer suggestions for a given question
--------------------------------------------
+Get answer suggestions for a given question (autocomplete)
+----------------------------------------------------------
 
 GET /suggestions?type=a&q=city&text=cor
 

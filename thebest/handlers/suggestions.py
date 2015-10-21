@@ -14,30 +14,31 @@ class SuggestionsHandler(base.BaseHandler):
 
         suggestion_type = self.get_query_argument(api.TYPE_TAG, None)
         if not suggestion_type:
-            self.build_response(exceptions.MissingArgumentValue(
-                'Missing argument {0}'.format(api.TYPE_TAG)))
-            return
+            raise exceptions.MissingArgumentValue(
+                'Missing argument {0}'.format(api.TYPE_TAG))
 
-        text = self.get_query_argument(api.TEXT_TAG, None)
-        if not text:
-            self.build_response(exceptions.MissingArgumentValue(
-                'Missing argument {0}'.format(api.TEXT_TAG)))
-            return
+        if suggestion_type == api.QUESTION_TAG or suggestion_type == api.ANSWER_TAG:
+            text = self.get_query_argument(api.TEXT_TAG, None)
+            if not text:
+                raise exceptions.MissingArgumentValue(
+                    'Missing argument {0}'.format(api.TEXT_TAG))
+
+        if suggestion_type == api.ANSWER_TAG:
+            question = self.get_query_argument(api.QUESTION_TAG, None)
+            if not question:
+                raise exceptions.MissingArgumentValue(
+                    'Missing argument {0}'.format(api.QUESTION_TAG))
 
         app = api.Application(self.context, self.application_settings.items_repository)
         if suggestion_type == api.QUESTION_TAG:
             items = yield app.get_question_suggestions(text)
         elif suggestion_type == api.ANSWER_TAG:
-            question = self.get_query_argument(api.QUESTION_TAG, None)
-            if not question:
-                self.build_response(exceptions.MissingArgumentValue(
-                    'Missing argument {0}'.format(api.QUESTION_TAG)))
-                return
             items = yield app.get_answer_suggestions(question, text)
+        elif suggestion_type == api.SYSTEM_Q_TAG:
+            items = yield app.get_system_suggestions()
         else:
-            self.build_response(exceptions.InvalidArgumentValue(
-                'Invalid value {0} for argument {1}'.format(suggestion_type, api.TYPE_TAG)))
-            return
+            raise exceptions.InvalidArgumentValue(
+                'Invalid value {0} for argument {1}'.format(suggestion_type, api.TYPE_TAG))
 
         response = {
             "suggestions": items

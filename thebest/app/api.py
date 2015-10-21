@@ -9,6 +9,7 @@ QUESTION_TAG = 'q'
 ANSWER_TAG = 'a'
 TEXT_TAG = 'text'
 TYPE_TAG = 'type'
+SYSTEM_Q_TAG = 'sysq'
 
 
 class Application(object):
@@ -20,17 +21,19 @@ class Application(object):
     @gen.coroutine
     def get_question_suggestions(self, text):
 
-        # ToDo: Return from repository dict with text key
         suggestions = yield self.items_repository.get_question_suggestions(text)
         raise gen.Return(suggestions)
 
     @gen.coroutine
     def get_answer_suggestions(self, question, text):
 
-        # ToDo: return answers only for this question
-        # ToDo: Return from repository dict with text key
-
         suggestions = yield self.items_repository.get_answer_suggestions(question, text)
+        raise gen.Return(suggestions)
+
+    @gen.coroutine
+    def get_system_suggestions(self):
+
+        suggestions = yield self.items_repository.get_system_suggestions()
         raise gen.Return(suggestions)
 
     @gen.coroutine

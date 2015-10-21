@@ -61,6 +61,23 @@ class TheBestRepository(object):
         raise gen.Return(result)
 
     @gen.coroutine
+    def get_system_suggestions(self):
+        result = []
+
+        cursor = [('restaurante',),
+                  ('restaurante de Cordoba',),
+                  ('restaurante de sushi de Cordoba',),
+                  ('restaurante de Cordoba en zona norte',),
+                  ('restaurante de Cordoba abierto al mediodia',)]
+
+        for row in cursor:
+            result.append({
+                TEXT_TAG: row[0]
+            })
+
+        raise gen.Return(result)
+
+    @gen.coroutine
     def get_system_questions(self, question):
         result = []
         with (yield self.pool.Connection()) as conn:
