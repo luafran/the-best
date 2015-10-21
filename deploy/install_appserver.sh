@@ -13,6 +13,8 @@ apt-get -y install ntp ntpdate
 service ntp start
 ntpdate 0.pool.ntp.org
 
+adduser --system the-best
+
 apt-get -y install nginx
 rm -f /etc/nginx/conf.d/*
 rm -f /etc/nginx/sites-enabled/*
@@ -23,3 +25,4 @@ apt-get -y install supervisor
 cp sysconfig/supervisor/the-best.conf /etc/supervisor/conf.d/
 
 cp sysconfig/runservice.sh /opt
+chown the-best:the-best /opt/runservice.sh

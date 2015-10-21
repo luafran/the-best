@@ -5,7 +5,7 @@ from fabric.api import *
 
 
 ROOT_DIR = os.path.join(os.path.dirname(__file__), "..")
-INSTALL_DIR = "/opt/the-best"
+INSTALL_DIR = "/home/the-best/the-best"
 
 DIST_DIR = os.path.join(ROOT_DIR, "dist")
 CONTINUOUS_INTEGRATION_DIR = os.path.join(ROOT_DIR, "ci")
@@ -50,6 +50,7 @@ def deploy():
     sudo(". " + INSTALL_DIR + "/bin/activate; " + INSTALL_DIR + "/bin/pip install " + "/tmp/" +
          os.path.basename(package_file_path))
 
+    sudo('chown -R the-best:the-best ' + INSTALL_DIR)
     sudo("service supervisor start")
     sudo("service nginx start")
 
