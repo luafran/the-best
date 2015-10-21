@@ -30,10 +30,10 @@ class TheBestRepository(object):
         result = []
         with (yield self.pool.Connection()) as conn:
                 with conn.cursor() as cursor:
-                    statement = "SELECT question " \
-                                "  FROM questions " \
-                                " WHERE MATCH(question) AGAINST('+{0}*' IN BOOLEAN MODE) " \
-                                " LIMIT 10;"\
+                    statement = u"SELECT question " \
+                                u"  FROM questions " \
+                                u" WHERE MATCH(question) AGAINST('+{0}*' IN BOOLEAN MODE) " \
+                                u" LIMIT 10;"\
                         .format(text)
                     yield cursor.execute(statement)
                     for row in cursor:
@@ -47,11 +47,11 @@ class TheBestRepository(object):
         result = []
         with (yield self.pool.Connection()) as conn:
                 with conn.cursor() as cursor:
-                    statement = "SELECT answer " \
-                                "  FROM answers " \
-                                " WHERE question_id = sha1('{0}') " \
-                                "   AND MATCH(answer) AGAINST('+{1}*' IN BOOLEAN MODE) " \
-                                " LIMIT 10;"\
+                    statement = u"SELECT answer " \
+                                u"  FROM answers " \
+                                u" WHERE question_id = sha1('{0}') " \
+                                u"   AND MATCH(answer) AGAINST('+{1}*' IN BOOLEAN MODE) " \
+                                u" LIMIT 10;"\
                         .format(question, text)
                     yield cursor.execute(statement)
                     for row in cursor:
@@ -65,18 +65,18 @@ class TheBestRepository(object):
         result = []
         with (yield self.pool.Connection()) as conn:
                 with conn.cursor() as cursor:
-                    statement = "SELECT id, "\
-                                "       question, "\
-                                "       (SELECT count(*) "\
-                                "          FROM actions a "\
-                                "         WHERE a.answer_question_id = q.id) as votes, "\
-                                "       (SELECT max(ts) "\
-                                "          FROM actions a "\
-                                "         WHERE a.answer_question_id = q.id) as last_vote "\
-                                " FROM questions q " \
-                                "WHERE q.id <> sha1('{0}') "\
-                                "ORDER BY votes, last_vote " \
-                                "LIMIT 10;"\
+                    statement = u"SELECT id, "\
+                                u"       question, "\
+                                u"       (SELECT count(*) "\
+                                u"          FROM actions a "\
+                                u"         WHERE a.answer_question_id = q.id) as votes, "\
+                                u"       (SELECT max(ts) "\
+                                u"          FROM actions a "\
+                                u"         WHERE a.answer_question_id = q.id) as last_vote "\
+                                u" FROM questions q " \
+                                u"WHERE q.id <> sha1('{0}') "\
+                                u"ORDER BY votes, last_vote " \
+                                u"LIMIT 10;"\
                                 .format(question)
                     yield cursor.execute(statement)
                     for row in cursor:
@@ -93,17 +93,17 @@ class TheBestRepository(object):
         result = []
         with (yield self.pool.Connection()) as conn:
                 with conn.cursor() as cursor:
-                    statement = "SELECT a.id as answer_id, "\
-                                "       a.answer, "\
-                                "       (SELECT count(*) " \
-                                "          FROM actions ac " \
-                                "         WHERE ac.answer_question_id = q.id) as votes" \
-                                "  FROM questions q " \
-                                "       LEFT OUTER JOIN answers a " \
-                                "         ON a.question_id = q.id " \
-                                " WHERE q.id = sha1('{0}') " \
-                                " ORDER BY votes DESC " \
-                                " LIMIT 5;"\
+                    statement = u"SELECT a.id as answer_id, "\
+                                u"       a.answer, "\
+                                u"       (SELECT count(*) " \
+                                u"          FROM actions ac " \
+                                u"         WHERE ac.answer_question_id = q.id) as votes" \
+                                u"  FROM questions q " \
+                                u"       LEFT OUTER JOIN answers a " \
+                                u"         ON a.question_id = q.id " \
+                                u" WHERE q.id = sha1('{0}') " \
+                                u" ORDER BY votes DESC " \
+                                u" LIMIT 5;"\
                                 .format(question)
                     yield cursor.execute(statement)
                     for row in cursor:
@@ -118,8 +118,8 @@ class TheBestRepository(object):
     def add_question(self, question):
         with (yield self.pool.Connection()) as conn:
                 with conn.cursor() as cursor:
-                    statement = "INSERT INTO questions(id, question) " \
-                                " VALUES(sha1('{0}'), '{0}');"\
+                    statement = u"INSERT INTO questions(id, question) " \
+                                u" VALUES(sha1('{0}'), '{0}');"\
                         .format(question)
                     yield cursor.execute(statement)
 
@@ -127,16 +127,16 @@ class TheBestRepository(object):
     def add_answer(self, question, answer):
         with (yield self.pool.Connection()) as conn:
                 with conn.cursor() as cursor:
-                    statement = "SELECT count(*) " \
-                                "  FROM questions " \
-                                " WHERE id = sha1('{0}'); " \
+                    statement = u"SELECT count(*) " \
+                                u"  FROM questions " \
+                                u" WHERE id = sha1('{0}'); " \
                         .format(question)
                     yield cursor.execute(statement)
                     if cursor.fetchone()[0] == 0:
                         raise exceptions.InvalidArgument('The question: {0} does not exist'.format(question))
 
-                    statement = "INSERT IGNORE INTO answers(question_id, id, answer)" \
-                                " VALUES(sha1('{0}'), sha1('{1}'), '{1}');"\
+                    statement = u"INSERT IGNORE INTO answers(question_id, id, answer)" \
+                                u" VALUES(sha1('{0}'), sha1('{1}'), '{1}');"\
                         .format(question, answer)
                     yield cursor.execute(statement)
 
@@ -150,16 +150,16 @@ class TheBestRepository(object):
                     # Only VOTE so far
                     # ToDo: should this check be here?
                     if action_type == ACTION_VOTE:
-                        statement = "SELECT count(*) " \
-                                    "  FROM answers " \
-                                    " WHERE question_id = sha1('{0}') and id = sha1('{1}'); " \
+                        statement = u"SELECT count(*) " \
+                                    u"  FROM answers " \
+                                    u" WHERE question_id = sha1('{0}') and id = sha1('{1}'); " \
                             .format(question, answer)
                         yield cursor.execute(statement)
                         if cursor.fetchone()[0] == 0:
                             raise exceptions.InvalidArgument('No answer for question: {0}'.format(question))
 
-                        statement = "INSERT INTO actions(answer_question_id, answer_id, type)" \
-                                    " VALUES(sha1('{0}'), sha1('{1}'), '{2}');"\
+                        statement = u"INSERT INTO actions(answer_question_id, answer_id, type)" \
+                                    u" VALUES(sha1('{0}'), sha1('{1}'), '{2}');"\
                             .format(question, answer, action_type)
                         yield cursor.execute(statement)
                     else:
