@@ -24,5 +24,5 @@ service nginx restart
 apt-get -y install supervisor
 cp sysconfig/supervisor/the-best.conf /etc/supervisor/conf.d/
 
-cp sysconfig/runservice.sh /opt
-chown the-best:the-best /opt/runservice.sh
+cp sysconfig/runservice.sh /home/the-best/
+chown the-best:the-best /home/the-best/runservice.sh
