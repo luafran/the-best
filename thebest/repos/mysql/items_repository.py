@@ -52,7 +52,7 @@ class TheBestRepository(object):
                                 u" WHERE question_id = sha1('{0}') " \
                                 u"   AND MATCH(answer) AGAINST('+{1}*' IN BOOLEAN MODE) " \
                                 u" LIMIT 10;"\
-                        .format(question, text)
+                        .format(question.lower(), text)
                     yield cursor.execute(statement)
                     for row in cursor:
                         result.append({
@@ -94,7 +94,7 @@ class TheBestRepository(object):
                                 u"WHERE q.id <> sha1('{0}') "\
                                 u"ORDER BY votes, last_vote " \
                                 u"LIMIT 10;"\
-                                .format(question)
+                                .format(question.lower())
                     yield cursor.execute(statement)
                     for row in cursor:
                         result.append({
@@ -121,7 +121,7 @@ class TheBestRepository(object):
                                 u" WHERE q.id = sha1('{0}') " \
                                 u" ORDER BY votes DESC " \
                                 u" LIMIT 5;"\
-                                .format(question)
+                                .format(question.lower())
                     yield cursor.execute(statement)
                     for row in cursor:
                         result.append({
@@ -136,8 +136,8 @@ class TheBestRepository(object):
         with (yield self.pool.Connection()) as conn:
                 with conn.cursor() as cursor:
                     statement = u"INSERT INTO questions(id, question) " \
-                                u" VALUES(sha1('{0}'), '{0}');"\
-                        .format(question)
+                                u" VALUES(sha1('{0}'), '{1}');"\
+                        .format(question.lower(), question)
                     yield cursor.execute(statement)
 
     @gen.coroutine
@@ -147,14 +147,14 @@ class TheBestRepository(object):
                     statement = u"SELECT count(*) " \
                                 u"  FROM questions " \
                                 u" WHERE id = sha1('{0}'); " \
-                        .format(question)
+                        .format(question.lower())
                     yield cursor.execute(statement)
                     if cursor.fetchone()[0] == 0:
                         raise exceptions.InvalidArgument('The question: {0} does not exist'.format(question))
 
                     statement = u"INSERT IGNORE INTO answers(question_id, id, answer)" \
-                                u" VALUES(sha1('{0}'), sha1('{1}'), '{1}');"\
-                        .format(question, answer)
+                                u" VALUES(sha1('{0}'), sha1('{1}'), '{2}');"\
+                        .format(question.lower(), answer.lower(), answer)
                     yield cursor.execute(statement)
 
                     yield self.add_action(ACTION_VOTE, question, answer)
@@ -170,14 +170,14 @@ class TheBestRepository(object):
                         statement = u"SELECT count(*) " \
                                     u"  FROM answers " \
                                     u" WHERE question_id = sha1('{0}') and id = sha1('{1}'); " \
-                            .format(question, answer)
+                            .format(question.lower(), answer.lower())
                         yield cursor.execute(statement)
                         if cursor.fetchone()[0] == 0:
                             raise exceptions.InvalidArgument('No answer for question: {0}'.format(question))
 
                         statement = u"INSERT INTO actions(answer_question_id, answer_id, type)" \
                                     u" VALUES(sha1('{0}'), sha1('{1}'), '{2}');"\
-                            .format(question, answer, action_type)
+                            .format(question.lower(), answer.lower(), action_type)
                         yield cursor.execute(statement)
                     else:
                         raise exceptions.InvalidArgument('Unsupported action type: {0}'.format(action_type))
