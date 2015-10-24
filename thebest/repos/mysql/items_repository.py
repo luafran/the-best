@@ -150,7 +150,7 @@ class TheBestRepository(object):
                         .format(question.lower())
                     yield cursor.execute(statement)
                     if cursor.fetchone()[0] == 0:
-                        raise exceptions.InvalidArgument('The question: {0} does not exist'.format(question))
+                        raise exceptions.InvalidArgument(u'The question: {0} does not exist'.format(question))
 
                     statement = u"INSERT IGNORE INTO answers(question_id, id, answer)" \
                                 u" VALUES(sha1('{0}'), sha1('{1}'), '{2}');"\
@@ -173,11 +173,11 @@ class TheBestRepository(object):
                             .format(question.lower(), answer.lower())
                         yield cursor.execute(statement)
                         if cursor.fetchone()[0] == 0:
-                            raise exceptions.InvalidArgument('No answer for question: {0}'.format(question))
+                            raise exceptions.InvalidArgument(u'No answer for question: {0}'.format(question))
 
                         statement = u"INSERT INTO actions(answer_question_id, answer_id, type)" \
                                     u" VALUES(sha1('{0}'), sha1('{1}'), '{2}');"\
                             .format(question.lower(), answer.lower(), action_type)
                         yield cursor.execute(statement)
                     else:
-                        raise exceptions.InvalidArgument('Unsupported action type: {0}'.format(action_type))
+                        raise exceptions.InvalidArgument(u'Unsupported action type: {0}'.format(action_type))
