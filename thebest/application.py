@@ -31,7 +31,7 @@ APPLICATION = web.Application(
         (r'.*/health/?$', health.HealthHandler,
          {'application_settings': settings, 'handler': 'Health'}),
         (r'.*/api/session', session.SessionHandler,
-         {'application_settings': settings, 'handler': 'Token'}, 'api_token'),
+         {'application_settings': settings, 'handler': 'Token'}, 'api_session'),
         (r'.*/api/token', token.TokenHandler,
          {'application_settings': settings, 'handler': 'Token'}, 'api_token'),
         (r'.*/api/suggestions', suggestions.SuggestionsHandler,

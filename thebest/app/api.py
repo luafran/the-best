@@ -2,6 +2,7 @@ from tornado import gen
 
 # These are the names used externally against clients
 # Do not confuse with names used internally in our repository
+LIMIT_TAG = 'limit'
 ID_TAG = 'id'
 ITEM_TAG = 'item'
 ITEMS_TAG = 'items'
@@ -37,9 +38,9 @@ class Application(object):
         raise gen.Return(suggestions)
 
     @gen.coroutine
-    def get_best_answer(self, question):
+    def get_best_answers(self, question, limit):
         items = yield self.items_repository.get_best_answers(question)
-        result = items[0] if items else None
+        result = items[0:limit] if items else None
         raise gen.Return(result)
 
     @gen.coroutine
