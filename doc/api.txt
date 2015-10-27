@@ -59,14 +59,30 @@ Get the best (r) answer to a given question
 
 GET /best_answer?q=question
 
+Optional query arguments:
+limit (default = 1)
+
 Response:
-200: {"a": "best_answer"}
-200: null -> fist time question (no answer yet)
-200: {"a": null} -> question exists but no answer yet
+200: {
+    "answers": [
+        {
+            "a": "El señor de los anillos",
+            "votes": 2,
+            "id": "4a75d93e7e684c82c4af085a0529cdcd0157c19f"
+        },
+        {
+            "a": "El señor de las moscas",
+            "votes": 1,
+            "id": "4249b0d9e213163f6fce4e73c78497406226210a"
+        }
+    ]
+}
+200: {"answers": []} -> fist time question (no answer yet)
+200: {"answers": [{"a": null, "votes": 0, "id": null}]} -> question exists but no answer yet
 
 
 Repository:
-get_best_answers(q="question"):
+get_best_answers(q="question", limit):
 	[{"a", "best_answer"}, {"a": "another_answer"}] | [] | InfoException
 
 
@@ -92,13 +108,25 @@ Get question for the user to answer
 
 GET /system_question?q=user_question
 
+Optional query arguments:
+limit (default = 1)
+
 Response:
-200: {"q": "system_question"}
-200: null -> no question for the user to answer
+200: {
+    "questions": [
+        {
+            "q": "pelicula",
+            "votes": 0,
+            "id": "a84cc0afc1517f1e3a0c5215a8d3ab804800bc09",
+            "last_vote": null
+        }
+    ]
+}
+200: {"questions": []} -> no question for the user to answer
 
 
 Repository:
-get_system_questions():
+get_system_questions(q, limit):
 	[{"q": "system_question1"}, {"q": "another_system_question"}] | [] | InfoException
 
 
