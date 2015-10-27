@@ -114,7 +114,7 @@ class TheBestRepository(object):
                                 u"       a.answer, "\
                                 u"       (SELECT count(*) " \
                                 u"          FROM actions ac " \
-                                u"         WHERE ac.answer_question_id = q.id) as votes" \
+                                u"         WHERE ac.answer_question_id = q.id and ac.answer_id = a.id) as votes" \
                                 u"  FROM questions q " \
                                 u"       LEFT OUTER JOIN answers a " \
                                 u"         ON a.question_id = q.id " \
