@@ -1,7 +1,6 @@
 from tornado import gen
 
 from thebest.app.auth import authorization
-from thebest.common import exceptions
 from thebest.common.handlers import base
 from thebest.common.handlers import decorators
 
