@@ -21,27 +21,23 @@ class Application(object):
 
     @gen.coroutine
     def get_question_suggestions(self, text):
-
         suggestions = yield self.items_repository.get_question_suggestions(text)
         raise gen.Return(suggestions)
 
     @gen.coroutine
     def get_answer_suggestions(self, question, text):
-
         suggestions = yield self.items_repository.get_answer_suggestions(question, text)
         raise gen.Return(suggestions)
 
     @gen.coroutine
     def get_system_suggestions(self):
-
         suggestions = yield self.items_repository.get_system_suggestions()
         raise gen.Return(suggestions)
 
     @gen.coroutine
     def get_best_answers(self, question, limit):
         items = yield self.items_repository.get_best_answers(question)
-        result = items[0:limit] if items else None
-        raise gen.Return(result)
+        raise gen.Return(items)
 
     @gen.coroutine
     def add_question(self, question):
@@ -49,11 +45,9 @@ class Application(object):
         raise gen.Return(None)
 
     @gen.coroutine
-    def get_system_question(self, question):
+    def get_system_questions(self, question):
         items = yield self.items_repository.get_system_questions(question)
-        item = items[0] if items else None
-
-        raise gen.Return(item)
+        raise gen.Return(items)
 
     @gen.coroutine
     def process_user_answer(self, question, answer):

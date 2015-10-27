@@ -6,7 +6,7 @@ from thebest.common.handlers import base
 from thebest.common.handlers import decorators
 
 
-class SystemQuestionHandler(base.BaseHandler):
+class SystemQuestionHandlerV1(base.BaseHandler):
 
     @decorators.api_key_authorization
     @gen.coroutine
@@ -16,6 +16,7 @@ class SystemQuestionHandler(base.BaseHandler):
             response = exceptions.MissingArgumentValue('Missing argument {0}'.format(api.QUESTION_TAG))
         else:
             app = api.Application(self.context, self.application_settings.items_repository)
-            response = yield app.get_system_question(question)
+            items = yield app.get_system_questions(question)
+            response = items[0] if items else None
 
         self.build_response(response)

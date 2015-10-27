@@ -6,7 +6,7 @@ from thebest.common.handlers import base
 from thebest.common.handlers import decorators
 
 
-class ActionHandler(base.BaseHandler):
+class ActionHandlerV1(base.BaseHandler):
 
     @decorators.api_key_authorization
     @gen.coroutine

@@ -7,7 +7,7 @@ from thebest.common.handlers import decorators
 
 
 # pylint: disable=arguments-differ
-class QuestionHandler(base.BaseHandler):
+class QuestionHandlerV1(base.BaseHandler):
 
     @decorators.api_key_authorization
     @gen.coroutine
