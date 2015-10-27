@@ -32,26 +32,26 @@ def oauth2_authorization(func=None):
                     self.request.token = JWTToken(
                         token=token_str,
                         certificate=self.application_settings.PRIVATE_CERTIFICATE)
-                    self.context = Context(self.request, self.support)
-                    self.support.stat_set('active_families', self.context.account_id)
-                    self.support.stat_set('active_devices', self.context.device_id)
-                    logger = getLogger(settings.ANALYTICS_LOGGER_NAME)
-                    extra = {
-                        'env': self.mfs_environment,
-                        'service': self.settings.get('service_name'),
-                        'handler': self.handler,
-                        'app': self.context.client_id,
-                        'account': self.context.account_id,
-                        'user': self.context.member_id,
-                        'device': self.context.device_id
-                    }
-                    logger.info(None, extra=extra)
+                    # self.context = Context(self.request, self.support)
+                    # self.support.stat_set('active_families', self.context.account_id)
+                    # self.support.stat_set('active_devices', self.context.device_id)
+                    # logger = getLogger(settings.ANALYTICS_LOGGER_NAME)
+                    # extra = {
+                    #     'env': self.mfs_environment,
+                    #     'service': self.settings.get('service_name'),
+                    #     'handler': self.handler,
+                    #     'app': self.context.client_id,
+                    #     'account': self.context.account_id,
+                    #     'user': self.context.member_id,
+                    #     'device': self.context.device_id
+                    # }
+                    # logger.info(None, extra=extra)
                 except (TypeError, token_exceptions.InvalidToken):
                     raise exceptions.Unauthorized('Invalid token')
 
-                if self.request.token.payload.get("client_id") is None:
-                    raise exceptions.Unauthorized(
-                        'Invalid token: missing client_id on payload.')
+                # if self.request.token.payload.get("client_id") is None:
+                #     raise exceptions.Unauthorized(
+                #         'Invalid token: missing client_id on payload.')
 
                 # if (self.application_settings.ENFORCE_POLICIES and
                 #         self.context.products):
