@@ -36,7 +36,7 @@ class Application(object):
 
     @gen.coroutine
     def get_best_answers(self, question, limit):
-        items = yield self.items_repository.get_best_answers(question)
+        items = yield self.items_repository.get_best_answers(question, limit)
         raise gen.Return(items)
 
     @gen.coroutine
@@ -45,8 +45,8 @@ class Application(object):
         raise gen.Return(None)
 
     @gen.coroutine
-    def get_system_questions(self, question):
-        items = yield self.items_repository.get_system_questions(question)
+    def get_system_questions(self, question, limit):
+        items = yield self.items_repository.get_system_questions(question, limit)
         raise gen.Return(items)
 
     @gen.coroutine
