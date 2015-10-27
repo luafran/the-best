@@ -14,6 +14,8 @@ AUTO_RELOAD = True
 ENFORCE_POLICIES = True
 STATS_ENABLED = False
 
+SESSION_TTL_SECONDS = 86400
+
 JWT_TOKEN_NOT_BEFORE_TIMEDELTA = datetime.timedelta(minutes=1)
 
 RESOURCES_PATH = os.path.join(
@@ -32,6 +34,9 @@ MYSQL_USER = "root"
 MYSQL_PASSWD = "password"
 MYSQL_DB = "thebest"
 MYSQL_CHARSET = "utf8"
+
+REDIS_HOST = "127.0.0.1"
+REDIS_PORT = 6379
 
 GEOIP_DATABASE_FILE = os.path.join(os.path.expanduser("~"), 'GeoLite2-City.mmdb')
 

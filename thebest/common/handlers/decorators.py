@@ -1,15 +1,51 @@
 import functools
-from logging import getLogger
 import time
 
 from tornado import gen
 from tornado import ioloop
 
+from thebest.app.auth import authorization
+from thebest.common import constants
 from thebest.common import exceptions
 from thebest.common import settings
 from thebest.common.tokens import exceptions as token_exceptions
 from thebest.common.tokens.jwt_token import JWTToken
 from thebest.common.handlers.base import Context
+
+
+# This decorator must be before @gen.coroutine
+def session_authorization(func=None):
+    def the_decorator(func):
+        @gen.coroutine
+        @functools.wraps(func)
+        def wrapper(self, *args, **kwargs):
+            try:
+                session_id = self.request.headers.get(constants.SESSION_ID_HTTP_HEADER)
+                if not session_id:
+                    raise exceptions.Unauthorized('Session Id is missing')
+
+                auth = authorization.Authorization(self.context)
+                session_data = yield auth.get_session(session_id)
+
+                # self.context = Context(self.request, self.support)
+
+                if session_data is None:
+                    raise exceptions.Unauthorized('Invalid session Id')
+
+                yield func(self, *args, **kwargs)
+            except exceptions.InfoException as ex:
+                self.support.notify_error(ex)
+                self.build_response(ex)
+            except Exception as ex:  # pylint: disable=W0703
+                self.support.notify_error(ex)
+                self.build_response(ex)
+
+        return wrapper
+
+    if func:
+        return the_decorator(func)
+    else:
+        return the_decorator
 
 
 # This decorator must be before @gen.coroutine

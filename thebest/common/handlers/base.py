@@ -130,8 +130,9 @@ class BaseHandler(web.RequestHandler):  # pylint: disable=too-many-instance-attr
 
     def set_default_headers(self):
         self.set_header("Server", "Miramar Web Server")
-        self.set_header('Access-Control-Allow-Headers', 'Authorization, '
-                        + 'Content-Type, ' + constants.REQUEST_ID_HTTP_HEADER)
+        self.set_header('Access-Control-Allow-Headers', 'Authorization, ' + 'Content-Type, ' +
+                        constants.REQUEST_ID_HTTP_HEADER +
+                        ', ' + constants.SESSION_ID_HTTP_HEADER)
         self.set_header('Access-Control-Allow-Credentials', 'true')
         self.set_header('Access-Control-Allow-Origin', '*')
         self.set_header('Access-Control-Max-Age', '1728000')

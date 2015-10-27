@@ -9,6 +9,7 @@ from thebest.common.handlers import health
 from thebest.handlers import action
 from thebest.handlers import best_answer
 from thebest.handlers import question
+from thebest.handlers import session
 from thebest.handlers import suggestions
 from thebest.handlers import token
 from thebest.handlers import user_answer
@@ -29,6 +30,8 @@ APPLICATION = web.Application(
         # /api urls should go first
         (r'.*/health/?$', health.HealthHandler,
          {'application_settings': settings, 'handler': 'Health'}),
+        (r'.*/api/session', session.SessionHandler,
+         {'application_settings': settings, 'handler': 'Token'}, 'api_token'),
         (r'.*/api/token', token.TokenHandler,
          {'application_settings': settings, 'handler': 'Token'}, 'api_token'),
         (r'.*/api/suggestions', suggestions.SuggestionsHandler,

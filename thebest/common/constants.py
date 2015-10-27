@@ -21,6 +21,8 @@ REQUEST_ID_HTTP_HEADER = "X-Request-Id"
 # HTTP header name for X-Request-Timestamp
 LOCALTIME_HTTP_HEADER = "X-LocalTime"
 
+SESSION_ID_HTTP_HEADER = "X-Session-Id"
+
 # HTTP header name for Accept-Language
 ACCEPT_LANGUAGE_HTTP_HEADER = "Accept-Language"
 DEFAULT_LANGUAGE = "en"

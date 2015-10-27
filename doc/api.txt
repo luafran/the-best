@@ -1,6 +1,21 @@
 API Client - Backend - Repository
 =================================
 
+Start a new session
+-------------------
+
+POST /session
+
+Request body:
+{"device_id": "1234"}
+Note: Actually any json can be sent and will be stored as the value for the new session
+
+Response:
+201: {"sessionId": "9f8ec21d-3560-4d14-817d-725133654496", "expires_in": 86400}
+
+Returned session id should be sent in every request as the value of X-Session-Id http header
+
+
 Get fixed list of question suggestions/examples
 -----------------------------------------------
 
