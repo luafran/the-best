@@ -9,7 +9,7 @@ from thebest.common.handlers import decorators
 # pylint: disable=arguments-differ
 class QuestionHandlerV1(base.BaseHandler):
 
-    @decorators.api_key_authorization
+    @decorators.session_authorization
     @gen.coroutine
     def post(self):
         item = self.request.body_arguments

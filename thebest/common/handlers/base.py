@@ -337,6 +337,7 @@ class Context(object):  # pylint: disable=too-many-instance-attributes
         Constructor
         """
         self.support = support
+        self.session_data = None
         self.account_id = None
         self.client_id = None
         self.device_id = None
@@ -395,6 +396,11 @@ class Context(object):  # pylint: disable=too-many-instance-attributes
             self.products = token.payload.get(constants.PRODUCTS)
             self.products = self.products.split(',') if self.products else []
             self.token = token.token if token.token else None
+
+    def update_from_session_data(self, session_data):
+        if session_data:
+            self.session_data = session_data
+            self.device_id = session_data.get(constants.DEVICE_ID)
 
     def get_owner(self):
         return {

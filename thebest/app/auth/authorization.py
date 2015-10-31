@@ -1,3 +1,4 @@
+import json
 import uuid
 
 import redis
@@ -21,7 +22,7 @@ class Authorization(object):
         r = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
 
         try:
-            response = r.get(session_id)
+            response = json.loads(r.get(session_id))
         except redis.ConnectionError:
             raise exceptions.DatabaseOperationError('Cannot get session')
 
@@ -35,7 +36,7 @@ class Authorization(object):
         session_id = str(uuid.uuid4())
         session_ttl = settings.SESSION_TTL_SECONDS
         try:
-            r.set(session_id, session_data, ex=session_ttl)
+            r.set(session_id, json.dumps(session_data), ex=session_ttl)
         except redis.ConnectionError:
             raise exceptions.DatabaseOperationError('Cannot store session')
 

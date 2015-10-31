@@ -26,11 +26,12 @@ def session_authorization(func=None):
 
                 auth = authorization.Authorization(self.context)
                 session_data = yield auth.get_session(session_id)
-
-                # self.context = Context(self.request, self.support)
-
-                if session_data is None:
+                if not session_data:
                     raise exceptions.Unauthorized('Invalid session Id')
+                session_data[constants.SESSION_ID] = session_id
+
+                self.context = Context(self.request, self.support)
+                self.context.update_from_session_data(session_data)
 
                 yield func(self, *args, **kwargs)
             except exceptions.InfoException as ex:

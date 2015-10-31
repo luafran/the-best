@@ -8,7 +8,7 @@ from thebest.common.handlers import decorators
 
 class UserAnswerHandlerV1(base.BaseHandler):
 
-    @decorators.api_key_authorization
+    @decorators.session_authorization
     @gen.coroutine
     def post(self):
         item = self.request.body_arguments
