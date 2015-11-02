@@ -15,6 +15,8 @@ ENFORCE_POLICIES = True
 STATS_ENABLED = False
 
 SESSION_TTL_SECONDS = 86400
+URLSHORTENER_TTL_SECONDS = 86400
+URLSHORTENER_BASE_URL = "http://thebestapi.ddns.net/api/urlshortener"
 
 JWT_TOKEN_NOT_BEFORE_TIMEDELTA = datetime.timedelta(minutes=1)
 

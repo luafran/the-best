@@ -31,7 +31,7 @@ class Authorization(object):
     @gen.coroutine
     def create_session(self, session_data):
 
-        r = redis.StrictRedis(host='localhost', port=6379, db=0)
+        r = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
 
         session_id = str(uuid.uuid4())
         session_ttl = settings.SESSION_TTL_SECONDS
