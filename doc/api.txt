@@ -16,6 +16,25 @@ Response:
 Returned session id should be sent in every request as the value of X-Session-Id http header
 
 
+Shorten a long URL
+-------------------
+
+POST /urlshortener
+
+Request body:
+{
+  "longUrl": "android-app://com.ionicframework.thebest572511/thebest/app/askForAnswer?user_question=auto"
+}
+
+Response:
+201: {
+    longUrl: "android-app://com.ionicframework.thebest572511/thebest/app/askForAnswer?user_question=auto"
+    expires_in: 86400
+    id: "http://thebestapi.ddns.net/api/v1/urlshortener/a2060610-796f-4b64-aaa4-d97633f9e292"
+}
+
+the id contains the url to send on the social (whatsapp) message.
+
 Get fixed list of question suggestions/examples
 -----------------------------------------------
 
