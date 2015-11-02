@@ -9,6 +9,7 @@ from thebest.common.handlers import health
 from thebest.handlers import action
 from thebest.handlers import best_answer
 from thebest.handlers import question
+from thebest.handlers import urlshortener
 from thebest.handlers import session
 from thebest.handlers import suggestions
 from thebest.handlers import token
@@ -30,6 +31,8 @@ APPLICATION = web.Application(
         # /api urls should go first
         (r'.*/health/?$', health.HealthHandler,
          {'application_settings': settings, 'handler': 'Health'}),
+        (r'.*/api/v1/urlshortener/?([^/]*)$', urlshortener.UrlShortenerHandlerV1,
+         {'application_settings': settings, 'handler': 'UrlShortenerHandlerV1'}, 'api_urlshortener_v1'),
         (r'.*/api/v1/session', session.SessionHandlerV1,
          {'application_settings': settings, 'handler': 'SessionV1'}, 'api_session_v1'),
         (r'.*/api/v1/token', token.TokenHandlerV1,

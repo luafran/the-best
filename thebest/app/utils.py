@@ -1,6 +1,10 @@
-from tornado import gen
-from thebest.common import settings
+import uuid
 import redis
+
+from tornado import gen
+
+from thebest.common import settings
+from thebest.common import exceptions
 
 
 class Utils(object):
