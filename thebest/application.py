@@ -33,6 +33,8 @@ APPLICATION = web.Application(
          {'application_settings': settings, 'handler': 'Health'}),
         (r'.*/api/v1/urlshortener/?([^/]*)$', urlshortener.UrlShortenerHandlerV1,
          {'application_settings': settings, 'handler': 'UrlShortenerHandlerV1'}, 'api_urlshortener_v1'),
+        (r'.*/url/?([^/]*)$', urlshortener.UrlShortenerHandlerV1,
+         {'application_settings': settings, 'handler': 'UrlShortenerHandlerV1'}, 'api_urlshortener_v1'),
         (r'.*/api/v1/session', session.SessionHandlerV1,
          {'application_settings': settings, 'handler': 'SessionV1'}, 'api_session_v1'),
         (r'.*/api/v1/token', token.TokenHandlerV1,

@@ -16,7 +16,7 @@ class Utils(object):
     def create_urlshortener(self, url):
         r = redis.StrictRedis(host=settings.REDIS_HOST, port=settings.REDIS_PORT, db=0)
 
-        shortener_id = str(uuid.uuid4())
+        shortener_id = uuid.uuid4().get_hex()
         shortener_ttl = settings.URLSHORTENER_TTL_SECONDS
         try:
             r.set(shortener_id, url, ex=shortener_ttl)

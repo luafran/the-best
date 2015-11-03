@@ -19,7 +19,6 @@ class UrlShortenerHandlerV1(base.BaseHandler):
         response = yield urlshortener.create_urlshortener(long_url)
         self.build_response(response)
 
-    @decorators.api_key_authorization
     @gen.coroutine
     def get(self, id):
 
