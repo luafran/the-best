@@ -1,0 +1,199 @@
+API Client - Backend - Repository
+=================================
+
+Start a new session
+-------------------
+
+POST /session
+
+Request body:
+{"device_id": "1234"}
+Note: Actually any json can be sent and will be stored as the value for the new session
+
+Response:
+201: {"sessionId": "9f8ec21d-3560-4d14-817d-725133654496", "expires_in": 86400}
+
+Returned session id should be sent in every request as the value of X-Session-Id http header
+
+
+Shorten a long URL
+-------------------
+
+POST /urlshortener
+
+Request body:
+{
+  "longUrl": "android-app://com.ionicframework.thebest572511/thebest/app/askForAnswer?user_question=auto"
+}
+
+Response:
+201: {
+    longUrl: "android-app://com.ionicframework.thebest572511/thebest/app/askForAnswer?user_question=auto"
+    expires_in: 86400
+    id: "http://thebestapi.ddns.net/api/v1/urlshortener/a2060610-796f-4b64-aaa4-d97633f9e292"
+}
+
+the id contains the url to send on the social (whatsapp) message.
+
+Get fixed list of question suggestions/examples
+-----------------------------------------------
+
+GET /suggestions?type=sysq
+200: {"suggestions": [{"text": "restaurante"}, {"text": "restaurante de cordoba"}]}
+200: {"suggestions": []}
+
+
+Get question suggestions (autocomplete)
+---------------------------------------
+
+GET /suggestions?type=q&text=cor
+
+Response:
+200: {"suggestions": [{"text": "cortadora de ceped"}, {"text": "corte de asado"}]}
+200: {"suggestions": []}
+
+
+Repository:
+get_question_suggestions(text="cor"):
+	[{"text": "cortadora de ceped"}, {"text": "corte de asado"}] | [] | InfoException
+
+
+Get answer suggestions for a given question (autocomplete)
+----------------------------------------------------------
+
+GET /suggestions?type=a&q=city&text=cor
+
+Response:
+200: {"suggestions": [{"text": "cordoba"}]}
+200: {"suggestions": []}
+
+
+Repository:
+get_answer_suggestions(q="city", text="cor"):
+	[{"text": "cordoba"}, {"text": "corrientes"}] | [] | InfoException
+
+
+Get the best (r) answer to a given question
+-------------------------------------------
+
+GET /best_answer?q=question
+
+Optional query arguments:
+limit (default = 1)
+
+Response:
+200: {
+    "answers": [
+        {
+            "a": "El señor de los anillos",
+            "votes": 2,
+            "id": "4a75d93e7e684c82c4af085a0529cdcd0157c19f"
+        },
+        {
+            "a": "El señor de las moscas",
+            "votes": 1,
+            "id": "4249b0d9e213163f6fce4e73c78497406226210a"
+        }
+    ]
+}
+200: {"answers": []} -> fist time question (no answer yet)
+200: {"answers": [{"a": null, "votes": 0, "id": null}]} -> question exists but no answer yet
+
+
+Repository:
+get_best_answers(q="question", limit):
+	[{"a", "best_answer"}, {"a": "another_answer"}] | [] | InfoException
+
+
+Add new question (used when best_answer is null)
+------------------------------------------------
+
+POST /question
+
+Request body:
+{"q": "new_question"}
+
+Response:
+201: null
+
+
+Repository:
+add_question(q="new_question"):
+	None | InfoException
+
+
+Get question for the user to answer
+-----------------------------------
+
+GET /system_question?q=user_question
+
+Optional query arguments:
+limit (default = 1)
+
+Response:
+200: {
+    "questions": [
+        {
+            "q": "pelicula",
+            "votes": 0,
+            "id": "a84cc0afc1517f1e3a0c5215a8d3ab804800bc09",
+            "last_vote": null
+        }
+    ]
+}
+200: {"questions": []} -> no question for the user to answer
+
+
+Repository:
+get_system_questions(q, limit):
+	[{"q": "system_question1"}, {"q": "another_system_question"}] | [] | InfoException
+
+
+Post user answer for a given question
+-------------------------------------
+
+POST /user_answer
+
+Request body:
+{"q": "system_question", "a": "user_answer"}
+
+Response:
+201: null
+
+
+Repository:
+add_answer(q="system_question", a="user_answer"):
+	None | InfoException
+
+
+Vote a given answer
+-------------------
+
+POST /action
+
+Request body:
+{"type": "VOTE", "q": "question", "a": "answer"}
+
+Response:
+201: null
+
+
+Repository:
+vote_answer(q="system_question", a="user_answer"):
+	None | InfoException
+
+
+skip a given answer
+-------------------
+
+POST /skip
+
+Request body:
+{"q": "question"}
+
+Response:
+201: null
+
+Repository:
+skip_answer(q="system_question"):
+	None | InfoException
